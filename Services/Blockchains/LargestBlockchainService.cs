@@ -8,25 +8,28 @@ using System.Net;
 
 namespace BlockchainAPI.Services.Blockchains
 {
-    public class GetBlockchainsFromNetService
+    public class LargestBlockchainService
     {
         private Blockchain _blockchain;
+        private List<Blockchain> _lstBlockchains;
         private Node[] _nodes;
-        public GetBlockchainsFromNetService()
+        public LargestBlockchainService()
         {
             _blockchain = new();
+            _lstBlockchains = new();
             _nodes = new NodeService().GetAll();
             if (_nodes != null && _nodes.Length != 0) GetFromNet();
         }
         private void GetFromNet()
         {
-            List<Blockchain> lstBlockchains = RequestFromNet();
-            if (lstBlockchains == null || lstBlockchains.Count == 0) return;
-            GetLargest(lstBlockchains);
+            GetAllFromNet();
+            if (_lstBlockchains == null || _lstBlockchains.Count == 0) return;
+            GetLargest();
         }
-        private List<Blockchain> RequestFromNet()
+        private void GetAllFromNet()
         {
-            List<Blockchain> lstBlockchains = new();
+            if (_nodes.Length == 0) Console.WriteLine("There is no node");
+            else
             foreach (Node node in _nodes)
             {
                 try
@@ -44,7 +47,7 @@ namespace BlockchainAPI.Services.Blockchains
                         };
                         string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
                         var data = JsonConvert.DeserializeAnonymousType(json, model);
-                        lstBlockchains.Add(data.blockchain);
+                        _lstBlockchains.Add(data.blockchain);
                     }
                 }
                 catch (Exception e)
@@ -52,19 +55,18 @@ namespace BlockchainAPI.Services.Blockchains
                     Console.WriteLine(e.Message);
                 }
             }
-            return lstBlockchains;
         }
-        private void GetLargest(List<Blockchain> lstBlockchains)
+        private void GetLargest()
         {
-            Blockchain newBlockchain = new();
-            foreach (Blockchain blockchain in lstBlockchains)
+            Blockchain largestBlockchain = new();
+            foreach (Blockchain blockchain in _lstBlockchains)
             {
-                if (blockchain.Blocks.Count > newBlockchain.Blocks.Count && ValidateBlockchainService.IsValid(blockchain))
-                    newBlockchain = blockchain;
+                if (blockchain.Blocks.Count > largestBlockchain.Blocks.Count && ValidateBlockchainService.IsValid(blockchain))
+                    largestBlockchain = blockchain;
             }
-            if (newBlockchain != null) _blockchain = newBlockchain;
+            if (largestBlockchain != null) _blockchain = largestBlockchain;
         }
-        public Blockchain GetLargest()
+        public Blockchain Get()
         {
             return _blockchain;
         }

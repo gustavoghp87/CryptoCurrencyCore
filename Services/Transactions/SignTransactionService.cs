@@ -1,5 +1,4 @@
 using BlockchainAPI.Models;
-using BlockchainAPI.Services;
 
 namespace BlockchainAPI.Services.Transactions
 {
@@ -14,12 +13,11 @@ namespace BlockchainAPI.Services.Transactions
         }
         private void Sign(string privateKey)
         {
-            _transaction.Message = TransactionMessageService.Generate(_transaction);
             _transaction.Signature = WalletService.SignMessage(_transaction, privateKey);
         }
         public string GetMessage()
         {
-            return _transaction.Message;
+            return TransactionMessageService.Generate(_transaction);
         }
         public string GetSignature()
         {

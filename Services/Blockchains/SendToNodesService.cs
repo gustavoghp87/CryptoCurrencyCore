@@ -6,9 +6,9 @@ namespace BlockchainAPI.Services.Blockchains
 {
     public static class SendToNodesService
     {
-        public static void Send(Node[] nodes, Blockchain blockchain)
+        public static void Send(Blockchain blockchain)
         {
-            foreach (Node node in nodes)
+            foreach (Node node in blockchain.Nodes)
             {
                 new HttpClient().PostAsJsonAsync(node.ToString() + "/new-blockchain", blockchain);
             }

@@ -70,5 +70,6 @@ namespace BlockchainAPI.Services.Blocks
             }
             return $"{block.Index}-[{block.Timestamp:yyyy-MM-dd HH:mm:ss}]-{block.Nonce}-{block.PreviousHash}-{signs}";
         }
-    }
+            // TODO: Difficulty in message ??
+        }
 }

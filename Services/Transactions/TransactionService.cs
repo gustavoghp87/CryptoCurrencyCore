@@ -22,7 +22,6 @@ namespace BlockchainAPI.Services.Transactions
             transaction.Sender = transactionReq.Sender;
             transaction.Signature = transactionReq.Signature;
             transaction.Timestamp = transactionReq.Timestamp;
-            transaction.Message = TransactionMessageService.Generate(transaction);
             if (transactionReq.Amount < 0 || transaction.Fees < 0) return false;
             if (transactionReq.Amount == 0 && transaction.Fees == 0) return false;
             if (transactionReq.Sender == IssuerService.Get().PublicKey && transactionReq.Amount > 0) return false;
@@ -71,7 +70,8 @@ namespace BlockchainAPI.Services.Transactions
                     if (auxiliar > 1) return false;
                 }
             }
-            decimal balance = await BalanceService.Get(transaction.Sender, _lstTransactions);
+            BalanceService balanceServ = new BalanceService(transaction.Sender, _lstTransactions);
+            decimal balance = await balanceServ.GetAsync();
             return balance >= transaction.Amount + transaction.Fees;
         }
         public List<Transaction> GetAll()

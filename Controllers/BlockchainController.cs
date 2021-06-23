@@ -61,7 +61,6 @@ namespace BlockchainAPI.Api
         {
             if (privateKey == null | privateKey == "") return BadRequest();
             var serv = new SignTransactionService(transactionRequest, privateKey);
-            transactionRequest.Message = serv.GetMessage();
             transactionRequest.Signature = serv.GetSignature();
             return Ok(transactionRequest);
         }
@@ -76,12 +75,13 @@ namespace BlockchainAPI.Api
         }
 
         [HttpGet("/balance/{publicKey}")]
-        public async Task<IActionResult> GetBalance(string publicKey)
+        public IActionResult GetBalance(string publicKey)
         {
             UpdateBlockchain();
             if (publicKey == "") return BadRequest();
             List<Transaction> lstCurrentTransactions = _blockchainServ.GetTransactionService().GetAll();
-            decimal balance = await BalanceService.Get(publicKey, lstCurrentTransactions, _blockchain);
+            BalanceService balanceServ = new BalanceService(publicKey, lstCurrentTransactions, _blockchain);
+            decimal balance = balanceServ.Get();
             return Ok(balance);
         }
 
@@ -103,6 +103,14 @@ namespace BlockchainAPI.Api
             //    Console.WriteLine(responseContent);
             //}
 
+        }
+
+        [HttpGet("/validation")]
+        public IActionResult ValidateBlockchain()
+        {
+            UpdateBlockchain();
+            bool response = ValidateBlockchainService.IsValid(_blockchain);
+            return Ok(response);
         }
 
         public class RegistryPackage

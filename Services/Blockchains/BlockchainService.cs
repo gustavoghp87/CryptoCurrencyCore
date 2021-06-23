@@ -15,7 +15,6 @@ namespace BlockchainAPI.Services.Blockchains
         private readonly Wallet _minerWallet;
         private readonly NodeService _nodeServ;
         private readonly TransactionService _transactionServ;
-        private Node[] _nodes;
         public BlockchainService()
         {
             _nodeServ = new();
@@ -28,10 +27,9 @@ namespace BlockchainAPI.Services.Blockchains
         }
         private async void Initialize()
         {
-            _nodes = _nodeServ.GetAll();
-            _blockchain.Nodes = _nodes;
+            _blockchain.Nodes = _nodeServ.GetAll();
             _nodeServ.RegisterMe();
-            Blockchain largestBC = new GetBlockchainsFromNetService().GetLargest();
+            Blockchain largestBC = new LargestBlockchainService().Get();
             if (largestBC != null && largestBC.Blocks != null && largestBC.Blocks.Count != 0)
             {
                 _blockchain = largestBC;
@@ -54,21 +52,11 @@ namespace BlockchainAPI.Services.Blockchains
             if (_blockchain.Blocks.Count != 0)
             {
                 lastBlock = _blockchain.Blocks.Last();
-                newBlock = new BlockService(
-                    lastBlock.Index + 1,
-                    lastBlock.Hash,
-                    lstTransactions,
-                    newDifficulty)
-                    .GetMined();
+                newBlock = new BlockService(lastBlock.Index + 1, lastBlock.Hash, lstTransactions, newDifficulty).GetMined();
             }
             else
             {
-                newBlock = new BlockService(
-                1,
-                "null!",
-                lstTransactions,
-                newDifficulty)
-                .GetMined();
+                newBlock = new BlockService(1, "null!", lstTransactions, newDifficulty).GetMined();
             }
             foreach (Block block in _blockchain.Blocks)
             {
@@ -84,7 +72,7 @@ namespace BlockchainAPI.Services.Blockchains
         }
         private void SendToNodes()
         {
-            SendToNodesService.Send(_nodes, _blockchain);
+            SendToNodesService.Send(_blockchain);
         }
         private async Task<bool> PayMeReward()
         {
@@ -98,7 +86,6 @@ namespace BlockchainAPI.Services.Blockchains
                 Timestamp = DateTime.UtcNow
             };
             SignTransactionService signServ = new(transaction, _blockchain.IssuerWallet.PrivateKey);
-            transaction.Message = signServ.GetMessage();
             transaction.Signature = signServ.GetSignature();
             return await _transactionServ.Add(transaction);
         }

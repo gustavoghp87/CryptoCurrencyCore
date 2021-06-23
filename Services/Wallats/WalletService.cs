@@ -1,4 +1,5 @@
 using BlockchainAPI.Models;
+using BlockchainAPI.Services.Transactions;
 using NBitcoin;
 
 namespace BlockchainAPI.Services
@@ -17,13 +18,14 @@ namespace BlockchainAPI.Services
         public static string SignMessage(Models.Transaction transaction, string privateKey)
         {
             var secret = Network.Main.CreateBitcoinSecret(privateKey);
-            var signature = secret.PrivateKey.SignMessage(transaction.Message);
+            var message = TransactionMessageService.Generate(transaction);
+            var signature = secret.PrivateKey.SignMessage(message);
             return signature;
         }
         public static bool IsVerifiedMessage(Models.Transaction transaction)
         {
             string senderPublicKey = transaction.Sender;
-            string originalMessage = transaction.Message;
+            string originalMessage = TransactionMessageService.Generate(transaction);
             string signedMessage = transaction.Signature;
             IPubkeyHashUsable address = (IPubkeyHashUsable)BitcoinAddress.Create(senderPublicKey, Network.Main);
             bool result = address.VerifyMessage(originalMessage, signedMessage);
