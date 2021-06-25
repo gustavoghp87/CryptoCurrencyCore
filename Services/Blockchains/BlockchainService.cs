@@ -5,11 +5,13 @@ using BlockchainAPI.Services.Transactions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace BlockchainAPI.Services.Blockchains
 {
-    public class BlockchainService : IBlockchainService
+    public partial class BlockchainService : IBlockchainService
     {
         private Blockchain _blockchain;
         private readonly Wallet _minerWallet;
@@ -49,6 +51,8 @@ namespace BlockchainAPI.Services.Blockchains
             Block newBlock;
             int newDifficulty = new NewDifficulty().Get();
 
+
+
             if (_blockchain.Blocks.Count != 0)
             {
                 lastBlock = _blockchain.Blocks.Last();
@@ -58,10 +62,15 @@ namespace BlockchainAPI.Services.Blockchains
             {
                 newBlock = new BlockService(1, "null!", lstTransactions, newDifficulty).GetMined();
             }
-            foreach (Block block in _blockchain.Blocks)
+
+
+
+
+            foreach (Block block in _blockchain.Blocks)            //  ???????
             {
                 if (newBlock.Index == block.Index) return false;
             };
+            
             _blockchain.Blocks.Add(newBlock);
             
             
@@ -69,10 +78,6 @@ namespace BlockchainAPI.Services.Blockchains
             //_nodeServ.UpdateList();
             _transactionServ.Clear();
             return true;
-        }
-        private void SendToNodes()
-        {
-            SendToNodesService.Send(_blockchain);
         }
         private async Task<bool> PayMeReward()
         {
@@ -100,14 +105,6 @@ namespace BlockchainAPI.Services.Blockchains
             }
             _blockchain.Reward = reward;
             return reward;
-        }
-        public Blockchain Get()
-        {
-            return _blockchain;
-        }
-        public TransactionService GetTransactionService()
-        {
-            return _transactionServ;
         }
     }
 }

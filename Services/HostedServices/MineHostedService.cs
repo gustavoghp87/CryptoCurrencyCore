@@ -16,10 +16,10 @@ namespace BlockchainAPI.Services.Blockchains
             int timeLeft = 60 - (int)unixTimeSeconds%60;
             Console.WriteLine("Waiting (" + timeLeft + " + 60) seconds to start mining");
             Console.WriteLine("60 seconds left");
-            _timer = new ST.Timer(Something, null, TimeSpan.Zero, TimeSpan.FromSeconds(60));
+            _timer = new ST.Timer(InitMiningCycle, null, TimeSpan.Zero, TimeSpan.FromSeconds(60));
             return Task.CompletedTask;
         }
-        private void Something(object o)
+        private void InitMiningCycle(object o)
         {
             long unixTimeSeconds = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
             Console.WriteLine("Sending best proof of work to network..." + unixTimeSeconds);
