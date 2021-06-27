@@ -7,50 +7,48 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading.Tasks;
 
 namespace cryptoCurrency.Services.Nodes
 {
     public class NodeService : INodeService
     {
         private List<Node> _lstNodes;
-        private Uri _centralServerUrl { get; set; }
         public NodeService()
         {
             _lstNodes = new();
-            _centralServerUrl = CentralServerConnection.GetUri();
-            GetAllFromServer();
+            GetFromCentralServers();
+            GetFromLongestBlockchain();
+            _lstNodes.ForEach(node => {
+                Console.WriteLine("Connected Nodes: " + node.Address);
+            });
         }
-        private void GetAllFromServer()
+        private void GetFromCentralServers()
         {
-            try
+            List<Uri> lstCentralServers = CentralServers.Get();
+            foreach (var centralServer in lstCentralServers)
             {
-                var request = (HttpWebRequest)WebRequest.Create(_centralServerUrl);
-                var response = (HttpWebResponse)request.GetResponse();
-                if (response.StatusCode == HttpStatusCode.OK)
+                try
                 {
+                    var request = (HttpWebRequest)WebRequest.Create(centralServer);
+                    var response = (HttpWebResponse)request.GetResponse();
+                    if (response.StatusCode != HttpStatusCode.OK) continue;
                     Console.WriteLine(response);
-                    //var model = new { nodesRetrieved = new List<Node>(), length = 0 };
                     string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
-                    var data = JsonConvert.DeserializeObject<List<string>>(json);
-
-                    foreach (var address in data)
-                    {
-                        var newNode = new Node
-                        {
-                            Address = new Uri(address.EndsWith('/') ? address.Substring(0, -1) : address)
-                        };
-                        if (!_lstNodes.Contains(newNode)) _lstNodes.Add(newNode);
-                    }
-                    foreach (var item in _lstNodes)
-                    {
-                        Console.WriteLine("Connected Nodes: " + item.Address);
-                    }
+                    var lstNodes = JsonConvert.DeserializeObject<List<Node>>(json);
+                    lstNodes.ForEach(node => {
+                        if (!_lstNodes.Contains(node)) _lstNodes.Add(node);
+                    });
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            };
+        }
+        private void GetFromLongestBlockchain()
+        {
+
         }
         public List<Node> GetAll()
         {
@@ -58,9 +56,16 @@ namespace cryptoCurrency.Services.Nodes
         }
 
 
-        public void RegisterMe()
+        public async Task RegisterMe()
         {
-            RegisterMeService.Send(_lstNodes);
+            int counter = 0;
+            if (_lstNodes == null || _lstNodes.Count == 0) return;
+            foreach (Node node in _lstNodes)
+            {
+                var response = await new HttpClient().GetAsync(node.Address + "node/registry");
+                if (response.IsSuccessStatusCode) counter++;
+            }
+            Console.WriteLine(counter);
         }
         public bool RegisterOne(string address)
         {

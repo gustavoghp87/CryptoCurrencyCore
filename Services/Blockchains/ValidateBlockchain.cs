@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace cryptoCurrency.Services.Blockchains
 {
-    public static class ValidateBlockchainService
+    public static class ValidateBlockchain
     {
         public static bool IsValid(Blockchain blockchain)
         {
@@ -16,6 +16,7 @@ namespace cryptoCurrency.Services.Blockchains
             if (!ValidateBlockService.IsValid(block1)) return false;
 
             // TODO: validate transactions
+            // TODO: validate rewards
             // TODO: validate monetary issue in transactions
             
             if (blockchain.Blocks.Count == 1) return true;

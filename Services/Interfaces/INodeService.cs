@@ -1,5 +1,6 @@
 using cryptoCurrency.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace cryptoCurrency.Services.Interfaces
 {
@@ -7,7 +8,7 @@ namespace cryptoCurrency.Services.Interfaces
     {
         List<Node> GetAll();
         Blockchain GetLongestBlockchain();
-        void RegisterMe();
+        Task RegisterMe();
         bool RegisterOne(string address);
         void SendNewBlockchain(Blockchain newBlockchain);
         void UpdateList();

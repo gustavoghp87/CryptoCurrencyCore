@@ -2,7 +2,7 @@ using System;
 using System.Numerics;
 using System.Text;
 
-namespace cryptoCurrency.Services
+namespace cryptoCurrency.Services.Blockchains
 {
     public static class HashScore
     {

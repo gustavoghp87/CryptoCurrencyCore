@@ -1,3 +1,4 @@
+using cryptoCurrency.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -14,11 +15,19 @@ namespace cryptoCurrency.Controllers
     [Produces("application/json")]
     public class NodeController : ControllerBase
     {
-        [HttpPost("/node")]
+
+        [HttpPost("node")]
+        public IActionResult AddNode(Node newNode)
+        {
+            
+            return Ok();
+        }
+
+        [HttpPost("node/registry")]
         public async Task<IActionResult> Register()
         {
             var httpClient = new HttpClient();
-            var stringPayload = JsonConvert.SerializeObject(new RegistryPackage());
+            var stringPayload = JsonConvert.SerializeObject(new { Ip = "http://localhost:5000" });
             var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
             Console.WriteLine(httpContent);
             var httpResponse = await httpClient.PostAsync("http://localhost:10000/registry", httpContent);
@@ -30,10 +39,6 @@ namespace cryptoCurrency.Controllers
             //    Console.WriteLine(responseContent);
             //}
 
-        }
-        public class RegistryPackage
-        {
-            public string Ip = "http://localhost:5000";
         }
     }
 }

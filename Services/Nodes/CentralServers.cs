@@ -1,15 +1,18 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net;
 using System.Text;
 
 namespace cryptoCurrency.Services.Nodes
 {
-    public static class CentralServerConnection
+    public static class CentralServers
     {
-        public static Uri GetUri()
+        public static List<Uri> Get()
         {
-            return new Uri("http://localhost:10000/nodes");
+            List<Uri> lstCentralServers = new();
+            lstCentralServers.Add(new Uri("http://localhost:10000/nodes"));
+            return lstCentralServers;
         }
         //public static bool Connect(string nodeId)
         //{

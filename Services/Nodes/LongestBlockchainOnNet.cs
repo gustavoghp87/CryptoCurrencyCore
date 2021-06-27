@@ -1,6 +1,5 @@
 using cryptoCurrency.Models;
 using cryptoCurrency.Services.Blockchains;
-using cryptoCurrency.Services.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -17,6 +16,7 @@ namespace cryptoCurrency.Services.Nodes
         public static Blockchain GetFromNet(List<Node> lstNodes)
         {
             _lstNodes = lstNodes;
+            _blockchain = new();
             _lstBlockchains = new();
             GetAllFromNet();
             if (_lstBlockchains == null || _lstBlockchains.Count == 0) return null;
@@ -35,17 +35,17 @@ namespace cryptoCurrency.Services.Nodes
                     Console.WriteLine(url.ToString());
                     var request = (HttpWebRequest)WebRequest.Create(url);
                     var response = (HttpWebResponse)request.GetResponse();
-                    if (response.StatusCode == HttpStatusCode.OK)
+                    //if (response.StatusCode == HttpStatusCode.OK)
+                    //{
+                    var model = new
                     {
-                        var model = new
-                        {
-                            blockchain = new Blockchain(),
-                            length = 0
-                        };
-                        string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
-                        var data = JsonConvert.DeserializeAnonymousType(json, model);
-                        _lstBlockchains.Add(data.blockchain);
-                    }
+                        blockchain = new Blockchain(),
+                        length = 0
+                    };
+                    string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                    var data = JsonConvert.DeserializeAnonymousType(json, model);
+                    _lstBlockchains.Add(data.blockchain);
+                    //}
                 }
                 catch (Exception e)
                 {
@@ -58,7 +58,7 @@ namespace cryptoCurrency.Services.Nodes
             Blockchain largestBlockchain = new();
             foreach (Blockchain blockchain in _lstBlockchains)
             {
-                if (blockchain.Blocks.Count > largestBlockchain.Blocks.Count && ValidateBlockchainService.IsValid(blockchain))
+                if (blockchain.Blocks.Count > largestBlockchain.Blocks.Count && ValidateBlockchain.IsValid(blockchain))
                     largestBlockchain = blockchain;
             }
             if (largestBlockchain != null) _blockchain = largestBlockchain;

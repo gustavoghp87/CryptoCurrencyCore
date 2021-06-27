@@ -45,7 +45,7 @@ namespace cryptoCurrency.Controllers
         public IActionResult Validate()
         {
             Update();
-            bool response = ValidateBlockchainService.IsValid(_blockchain);
+            bool response = ValidateBlockchain.IsValid(_blockchain);
             return Ok(response);
         }
     }

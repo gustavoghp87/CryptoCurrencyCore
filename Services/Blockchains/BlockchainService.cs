@@ -1,7 +1,6 @@
 using cryptoCurrency.Models;
 using cryptoCurrency.Services.Blocks;
 using cryptoCurrency.Services.Interfaces;
-using cryptoCurrency.Services.Nodes;
 using cryptoCurrency.Services.Transactions;
 using System;
 using System.Collections.Generic;
@@ -44,38 +43,20 @@ namespace cryptoCurrency.Services.Blockchains
         {
             bool response = await PayMeReward();
             if (!response) return false;
-            List<Transaction> lstTransactions = _transactionServ.GetAll();
-            Block lastBlock;
-            Block newBlock;
-            int newDifficulty = new NewDifficulty().Get();
 
+            Block lastBlock = _blockchain.Blocks != null && _blockchain.Blocks.Count != 0 ? _blockchain.Blocks.Last() : null;
+            Block newBlock = new BlockService(
+                lastBlock != null ? lastBlock.Index + 1 : 1,
+                lastBlock != null ? lastBlock.Hash : "null!",
+                _transactionServ.GetAll(),
+                new NewDifficulty().Get())
+            .GetMined();
 
-
-            if (_blockchain.Blocks.Count != 0)
-            {
-                lastBlock = _blockchain.Blocks.Last();
-                newBlock = new BlockService(lastBlock.Index + 1, lastBlock.Hash, lstTransactions, newDifficulty).GetMined();
-            }
-            else
-            {
-                newBlock = new BlockService(1, "null!", lstTransactions, newDifficulty).GetMined();
-            }
-
-
-
-
-            foreach (Block block in _blockchain.Blocks)            //  ???????
-            {
-                if (newBlock.Index == block.Index) return false;
-            };
-            
+            if (newBlock == null) return false;
             newBlock.DifficultyT = HashScore.Get(newBlock.Hash);
             _blockchain.Blocks.Add(newBlock);
             _blockchain.LastDifficulty = newBlock.DifficultyT;
-            
-            
-            // if (newBlock != null) SendToNodes();
-            //_nodeServ.UpdateList();
+            _nodeService.SendNewBlockchain(_blockchain);
             _transactionServ.Clear();
             return true;
         }
@@ -105,6 +86,10 @@ namespace cryptoCurrency.Services.Blockchains
             }
             _blockchain.LastReward = reward;
             return reward;
+        }
+        public Blockchain Get()
+        {
+            return _blockchain;
         }
     }
 }
