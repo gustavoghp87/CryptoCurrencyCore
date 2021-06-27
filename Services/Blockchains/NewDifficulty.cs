@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BlockchainAPI.Services.Blockchains
+namespace cryptoCurrency.Services.Blockchains
 {
     public class NewDifficulty
     {
         public int Get()
         {
-            return 2;
+            return 3;
         }
     }
 }

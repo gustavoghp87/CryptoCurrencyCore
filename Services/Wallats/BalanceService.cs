@@ -1,4 +1,4 @@
-using BlockchainAPI.Models;
+using cryptoCurrency.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace BlockchainAPI.Services.Blockchains
+namespace cryptoCurrency.Services.Blockchains
 {
     public class BalanceService
     {
@@ -35,7 +35,7 @@ namespace BlockchainAPI.Services.Blockchains
             List<Transaction> lstTransactions = GetTransactionsByAddress();
             decimal balance = 0;
             string issuerAddress = IssuerService.Get().PublicKey;
-            foreach (Transaction aTransaction in _lstCurrentTransactions)
+            foreach (Transaction aTransaction in lstTransactions)
             {
                 if (_senderPublicKey == aTransaction.Recipient)
                     balance += aTransaction.Amount;

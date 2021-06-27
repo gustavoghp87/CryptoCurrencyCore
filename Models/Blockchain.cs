@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 
-namespace BlockchainAPI.Models
+namespace cryptoCurrency.Models
 {
     public class Blockchain
     {
         public List<Block> Blocks { get; set; }
         public Wallet IssuerWallet { get; set; }
-        public Node[] Nodes { get; set; }
-        public decimal Reward { get; set; }        // or "LastReward"
+        public string LastDifficulty {get;set;}
+        public decimal LastReward { get; set; }
+        public List<Node> Nodes { get; set; }
     }
 }

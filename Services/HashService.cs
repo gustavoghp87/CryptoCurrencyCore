@@ -1,7 +1,6 @@
-using System;
 using System.Linq;
 
-namespace BlockchainAPI.Services
+namespace cryptoCurrency.Services
 {
     public class HashService
     {

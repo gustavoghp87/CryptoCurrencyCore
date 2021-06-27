@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Net;
 using System.Text;
 
-namespace BlockchainAPI.Services.Nodes
+namespace cryptoCurrency.Services.Nodes
 {
     public static class CentralServerConnection
     {

@@ -1,11 +1,12 @@
-using BlockchainAPI.Models;
-using BlockchainAPI.Services.Blockchains;
+using cryptoCurrency.Models;
+using cryptoCurrency.Services.Blockchains;
+using cryptoCurrency.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace BlockchainAPI.Services.Transactions
+namespace cryptoCurrency.Services.Transactions
 {
-    public class TransactionService
+    public class TransactionService : ITransactionService
     {
         private List<Transaction> _lstTransactions;
         public TransactionService()
@@ -25,15 +26,15 @@ namespace BlockchainAPI.Services.Transactions
             if (transactionReq.Amount < 0 || transaction.Fees < 0) return false;
             if (transactionReq.Amount == 0 && transaction.Fees == 0) return false;
             if (transactionReq.Sender == IssuerService.Get().PublicKey && transactionReq.Amount > 0) return false;
-            if(!IsVerified(transaction)) return false;
+            if (!IsVerified(transaction)) return false;
             bool success = await Create(transaction);
             // SendToNodes();
             return success;
         }
         //private bool GenerateTransaction(Transaction transaction)
         //{
-            // validar Timestamp dentro de la franja del bloque
-          //  if (!IsVerified(transaction)) transaction = null;
+        // validar Timestamp dentro de la franja del bloque
+        //  if (!IsVerified(transaction)) transaction = null;
         //}
         private static bool IsVerified(Transaction transaction)
         {
@@ -57,8 +58,8 @@ namespace BlockchainAPI.Services.Transactions
         }
         private async Task<bool> HasBalance(Transaction transaction)
         {
-            if (transaction.Sender == IssuerService.Get().PublicKey) return true;    // limitarlo a emisión
-            
+            if (transaction.Sender == IssuerService.Get().PublicKey) return true;    // limite this to issues
+
             // ver que el signature no se haya usado ya
             int auxiliar = 0;
             foreach (Transaction aTransaction in _lstTransactions)

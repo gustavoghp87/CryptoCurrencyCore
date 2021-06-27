@@ -1,33 +1,36 @@
 using System;
 using System.Numerics;
+using System.Text;
 
 namespace cryptoCurrency.Services
 {
     public static class HashScore
     {
-        private static int hashLength = 64;
-        private static int maxScore = 35;
-        private static string[] _characters = new string[]
+        private readonly static int _hashLength = 64;
+        private readonly static int _maxScore = 35;
+        private readonly static int _mode = 2;
+        private readonly static string[] _characters = new string[]
         {
-            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e" ,
-            "f" , "g" , "h" , "i" , "j" , "k" , "l" , "m" , "n" , "o" , "p" , "q" , "r" ,
-            "s" , "t" , "u" , "v" , "w" , "x" , "y" , "z"
+            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b",
+            "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n",
+            "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
         };
         public static string Get(string hash)
         {
-            BigInteger score = Score(hash);
+            BigInteger score = GetScore(hash);
             int zeros = GetZeros(hash);
             BigInteger rest = GetRest(score, zeros);
-            return zeros.ToString() + " zeros + " + rest.ToString();
+            string text = GetRestInText(zeros, rest);
+            return text.ToString();
         }
-        public static BigInteger Score(string hash)
+        private static BigInteger GetScore(string hash)
         {
-            if (hash.Length != hashLength) return 0;
+            if (hash.Length != _hashLength) return 0;
             BigInteger score = 0;
             long i = 0;
             foreach (char c in hash.ToCharArray())
             {
-                score += ScoreOneCharacter(c.ToString()) * (BigInteger)Math.Pow(maxScore+1, hashLength-1-i);
+                score += ScoreOneCharacter(c.ToString()) * (BigInteger)Math.Pow(_maxScore+1, _hashLength-1-i);
                 i++;
             }
             return score;
@@ -36,7 +39,7 @@ namespace cryptoCurrency.Services
         {
             for (int i = 0; i < _characters.Length; i++)
             {
-                if (c == _characters[i]) return maxScore - i;
+                if (c == _characters[i]) return _maxScore - i;
             }
             return 0;
         }
@@ -52,11 +55,29 @@ namespace cryptoCurrency.Services
         }
         private static BigInteger GetRest(BigInteger score, int zeros)
         {
+            BigInteger rest = score;
             for (int i = 0; i < zeros; i++)
             {
-                score -= maxScore * (BigInteger)Math.Pow(maxScore+1, hashLength-1-i);
+                rest -= _maxScore * (BigInteger)Math.Pow(_maxScore+1, _hashLength-1-i);
             }
-            return score;
+            return rest;
+        }
+        private static string GetRestInText(int zeros, BigInteger rest)
+        {
+            StringBuilder text = new();
+            string restString = rest.ToString();
+            text.Append(zeros.ToString() + " zeros + ");
+            if (restString.Length > 3)
+            {
+                if (_mode == 1) text.Append(restString[0] + "." + restString.Substring(1,3) + " x10^");
+                else text.Append(restString[0] + "." + restString.Substring(1,3) + "e+");
+                text.Append(restString.Substring(1, restString.Length-1).Length);
+            }
+            else
+            {
+                text.Append(restString);
+            }
+            return text.ToString();
         }
     }
 }

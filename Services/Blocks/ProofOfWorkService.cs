@@ -1,6 +1,6 @@
-using BlockchainAPI.Models;
+using cryptoCurrency.Models;
 
-namespace BlockchainAPI.Services.Blocks
+namespace cryptoCurrency.Services.Blocks
 {
     public class ProofOfWorkService
     {

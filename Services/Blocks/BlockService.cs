@@ -1,8 +1,8 @@
-using BlockchainAPI.Models;
+using cryptoCurrency.Models;
 using System;
 using System.Collections.Generic;
 
-namespace BlockchainAPI.Services.Blocks
+namespace cryptoCurrency.Services.Blocks
 {
     public class BlockService
     {
@@ -26,7 +26,7 @@ namespace BlockchainAPI.Services.Blocks
             ProofOfWorkService proofServ = new(_block);
             _block.Nonce = proofServ.GetNonce();
             _block.Hash = proofServ.GetHash();
-            ValidateBlockService.GetBestHash(_block);
+            //ValidateBlockService.GetBestHash(_block);        // not connected
         }
         public Block GetMined()
         {

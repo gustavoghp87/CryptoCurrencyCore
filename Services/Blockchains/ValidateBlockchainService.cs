@@ -1,8 +1,8 @@
-using BlockchainAPI.Models;
-using BlockchainAPI.Services.Blocks;
+using cryptoCurrency.Models;
+using cryptoCurrency.Services.Blocks;
 using System.Linq;
 
-namespace BlockchainAPI.Services.Blockchains
+namespace cryptoCurrency.Services.Blockchains
 {
     public static class ValidateBlockchainService
     {

@@ -1,8 +1,8 @@
-using BlockchainAPI.Models;
-using BlockchainAPI.Services.Transactions;
+using cryptoCurrency.Models;
+using cryptoCurrency.Services.Transactions;
 using NBitcoin;
 
-namespace BlockchainAPI.Services
+namespace cryptoCurrency.Services
 {
     public static class WalletService
     {

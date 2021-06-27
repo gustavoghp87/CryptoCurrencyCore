@@ -1,6 +1,6 @@
-using BlockchainAPI.Models;
+using cryptoCurrency.Models;
 
-namespace BlockchainAPI.Services
+namespace cryptoCurrency.Services
 {
     public static class MinerService
     {

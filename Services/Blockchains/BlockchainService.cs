@@ -1,37 +1,35 @@
-using BlockchainAPI.Models;
-using BlockchainAPI.Services.Blocks;
-using BlockchainAPI.Services.Nodes;
-using BlockchainAPI.Services.Transactions;
+using cryptoCurrency.Models;
+using cryptoCurrency.Services.Blocks;
+using cryptoCurrency.Services.Interfaces;
+using cryptoCurrency.Services.Nodes;
+using cryptoCurrency.Services.Transactions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 
-namespace BlockchainAPI.Services.Blockchains
+namespace cryptoCurrency.Services.Blockchains
 {
     public partial class BlockchainService : IBlockchainService
     {
         private Blockchain _blockchain;
         private readonly Wallet _minerWallet;
-        private readonly NodeService _nodeServ;
-        private readonly TransactionService _transactionServ;
-        public BlockchainService()
+        private readonly INodeService _nodeService;
+        private readonly ITransactionService _transactionServ;
+        public BlockchainService(INodeService nodeService, ITransactionService transactionServ)
         {
-            _nodeServ = new();
-            _transactionServ = new();
             _blockchain = new();
-            _blockchain.IssuerWallet = IssuerService.Get();
-            _blockchain.IssuerWallet = IssuerService.Get();
             _minerWallet = MinerService.Get();
+            _nodeService = nodeService;
+            _transactionServ = transactionServ;
+            _blockchain.IssuerWallet = IssuerService.Get();
             Initialize();
         }
         private async void Initialize()
         {
-            _blockchain.Nodes = _nodeServ.GetAll();
-            _nodeServ.RegisterMe();
-            Blockchain largestBC = new LargestBlockchainService().Get();
+            _blockchain.Nodes = _nodeService.GetAll();
+            _nodeService.RegisterMe();
+            Blockchain largestBC = _nodeService.GetLongestBlockchain();
             if (largestBC != null && largestBC.Blocks != null && largestBC.Blocks.Count != 0)
             {
                 _blockchain = largestBC;
@@ -71,7 +69,9 @@ namespace BlockchainAPI.Services.Blockchains
                 if (newBlock.Index == block.Index) return false;
             };
             
+            newBlock.DifficultyT = HashScore.Get(newBlock.Hash);
             _blockchain.Blocks.Add(newBlock);
+            _blockchain.LastDifficulty = newBlock.DifficultyT;
             
             
             // if (newBlock != null) SendToNodes();
@@ -103,7 +103,7 @@ namespace BlockchainAPI.Services.Blockchains
                 auxiliar /= 100;
                 reward /= 2;
             }
-            _blockchain.Reward = reward;
+            _blockchain.LastReward = reward;
             return reward;
         }
     }

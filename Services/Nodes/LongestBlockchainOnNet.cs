@@ -1,36 +1,33 @@
-using BlockchainAPI.Models;
-using BlockchainAPI.Services.Nodes;
+using cryptoCurrency.Models;
+using cryptoCurrency.Services.Blockchains;
+using cryptoCurrency.Services.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 
-namespace BlockchainAPI.Services.Blockchains
+namespace cryptoCurrency.Services.Nodes
 {
-    public class LargestBlockchainService
+    public static class LongestBlockchainOnNet
     {
-        private Blockchain _blockchain;
-        private List<Blockchain> _lstBlockchains;
-        private Node[] _nodes;
-        public LargestBlockchainService()
+        private static Blockchain _blockchain;
+        private static List<Blockchain> _lstBlockchains;
+        private static List<Node> _lstNodes;
+        public static Blockchain GetFromNet(List<Node> lstNodes)
         {
-            _blockchain = new();
+            _lstNodes = lstNodes;
             _lstBlockchains = new();
-            _nodes = new NodeService().GetAll();
-            if (_nodes != null && _nodes.Length != 0) GetFromNet();
-        }
-        private void GetFromNet()
-        {
             GetAllFromNet();
-            if (_lstBlockchains == null || _lstBlockchains.Count == 0) return;
+            if (_lstBlockchains == null || _lstBlockchains.Count == 0) return null;
             GetLargest();
+            return _blockchain;
         }
-        private void GetAllFromNet()
+        private static void GetAllFromNet()
         {
-            if (_nodes.Length == 0) Console.WriteLine("There is no node");
+            if (_lstNodes.Count == 0) Console.WriteLine("There is no node");
             else
-            foreach (Node node in _nodes)
+            foreach (Node node in _lstNodes)
             {
                 try
                 {
@@ -56,7 +53,7 @@ namespace BlockchainAPI.Services.Blockchains
                 }
             }
         }
-        private void GetLargest()
+        private static void GetLargest()
         {
             Blockchain largestBlockchain = new();
             foreach (Blockchain blockchain in _lstBlockchains)
@@ -65,10 +62,6 @@ namespace BlockchainAPI.Services.Blockchains
                     largestBlockchain = blockchain;
             }
             if (largestBlockchain != null) _blockchain = largestBlockchain;
-        }
-        public Blockchain Get()
-        {
-            return _blockchain;
         }
     }
 }

@@ -1,4 +1,4 @@
-namespace BlockchainAPI.Models
+namespace cryptoCurrency.Models
 {
     public class Miner
     {

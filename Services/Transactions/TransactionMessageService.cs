@@ -1,6 +1,6 @@
-using BlockchainAPI.Models;
+using cryptoCurrency.Models;
 
-namespace BlockchainAPI.Services.Transactions
+namespace cryptoCurrency.Services.Transactions
 {
     public static class TransactionMessageService
     {

@@ -1,11 +1,11 @@
-using BlockchainAPI.Models;
+using cryptoCurrency.Models;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace BlockchainAPI.Services.Blocks
+namespace cryptoCurrency.Services.Blocks
 {
     public static class ValidateBlockService
     {
@@ -18,6 +18,7 @@ namespace BlockchainAPI.Services.Blocks
                 startsWith += "0";
             }
             bool success = hash.StartsWith(startsWith);
+            if (success) Console.WriteLine("starts with: " + startsWith);
             return success;
         }
         public static Block GetBestHash(Block block){
@@ -35,11 +36,11 @@ namespace BlockchainAPI.Services.Blocks
                     bestHash = aux;
                     bestNonce = i;
                 }
-                if (i == 100 || i == 200 || i == 300 || i == 400 || i == 500 || i == 600 || i == 700 || i == 800 || i == 900 || i == 1000)
-                    Console.WriteLine(i + ": Hash: " + bestHash + ", Nonce: " + bestNonce);
+                // if (i == 100 || i == 200 || i == 300 || i == 400 || i == 500 || i == 600 || i == 700 || i == 800 || i == 900 || i == 1000)
+                //     Console.WriteLine(i + ": Hash: " + bestHash + ", Nonce: " + bestNonce);
             }
             sw.Stop();
-            Console.WriteLine(sw.ElapsedMilliseconds);
+            //Console.WriteLine(sw.ElapsedMilliseconds);
             block.Hash = bestHash;
             block.Nonce = (int)bestNonce;
             Console.WriteLine("Best Hash: " + bestHash + ", best Nonce: " + bestNonce);

@@ -1,17 +1,17 @@
-using BlockchainAPI.Models;
+using cryptoCurrency.Models;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 
-namespace BlockchainAPI.Services.Nodes
+namespace cryptoCurrency.Services.Nodes
 {
     public static class RegisterMeService
     {
-        public static void Send(Node[] nodes)
+        public static void Send(List<Node> lstNodes)
         {
             int counter = 0;
-            if (nodes == null || nodes.Length == 0) return;
-            foreach (Node node in nodes)
+            if (lstNodes == null || lstNodes.Count == 0) return;
+            foreach (Node node in lstNodes)
             {
                 //var response = await new HttpClient().GetAsync(node.ToString() + "register");
                 //if (response.IsSuccessStatusCode) counter++;
