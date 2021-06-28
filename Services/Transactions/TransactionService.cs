@@ -18,14 +18,14 @@ namespace cryptoCurrency.Services.Transactions
             Transaction transaction = new();
             transaction.Amount = transactionReq.Amount;
             transaction.Fees = transactionReq.Fees;
-            transaction.Miner = MinerService.Get().PublicKey;
+            transaction.Miner = Miner.Get().PublicKey;
             transaction.Recipient = transactionReq.Recipient;
             transaction.Sender = transactionReq.Sender;
             transaction.Signature = transactionReq.Signature;
             transaction.Timestamp = transactionReq.Timestamp;
             if (transactionReq.Amount < 0 || transaction.Fees < 0) return false;
             if (transactionReq.Amount == 0 && transaction.Fees == 0) return false;
-            if (transactionReq.Sender == IssuerService.Get().PublicKey && transactionReq.Amount > 0) return false;
+            if (transactionReq.Sender == Issuer.Get().PublicKey && transactionReq.Amount > 0) return false;
             if (!IsVerified(transaction)) return false;
             bool success = await Create(transaction);
             // SendToNodes();
@@ -58,7 +58,7 @@ namespace cryptoCurrency.Services.Transactions
         }
         private async Task<bool> HasBalance(Transaction transaction)
         {
-            if (transaction.Sender == IssuerService.Get().PublicKey) return true;    // limite this to issues
+            if (transaction.Sender == Issuer.Get().PublicKey) return true;    // limite this to issues
 
             // ver que el signature no se haya usado ya
             int auxiliar = 0;

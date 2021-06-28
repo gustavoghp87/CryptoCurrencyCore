@@ -1,11 +1,10 @@
 using cryptoCurrency.Models;
+using cryptoCurrency.Services.Interfaces;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace cryptoCurrency.Controllers
 {
@@ -15,30 +14,31 @@ namespace cryptoCurrency.Controllers
     [Produces("application/json")]
     public class NodeController : ControllerBase
     {
+        private INodeService _nodeService;
+        public NodeController(INodeService nodeService)
+        {
+            _nodeService = nodeService;
+        }
+
+        [HttpGet("node")]
+        public IActionResult GetNodes()
+        {
+            return Ok(_nodeService.GetAll());
+        }
 
         [HttpPost("node")]
         public IActionResult AddNode(Node newNode)
         {
-            
+            // TODO: take from url and not from body
+            RequestHeaders header = Request.GetTypedHeaders();
+            Uri uriReferer = header.Referer;
+            Console.WriteLine(uriReferer);
+            //
+            if (newNode.Address == null || newNode.Address.ToString() == "") return BadRequest();
+            while (newNode.Address.ToString().EndsWith('/'))
+                newNode.Address = new Uri(newNode.Address.ToString().Substring(0, -1));
+            _nodeService.RegisterOne(newNode);
             return Ok();
-        }
-
-        [HttpPost("node/registry")]
-        public async Task<IActionResult> Register()
-        {
-            var httpClient = new HttpClient();
-            var stringPayload = JsonConvert.SerializeObject(new { Ip = "http://localhost:5000" });
-            var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-            Console.WriteLine(httpContent);
-            var httpResponse = await httpClient.PostAsync("http://localhost:10000/registry", httpContent);
-            if (!httpResponse.IsSuccessStatusCode) return BadRequest();
-            return Ok("Register");
-            //if (httpResponse.Content != null)
-            //{
-            //    var responseContent = await httpResponse.Content.ReadAsStringAsync();
-            //    Console.WriteLine(responseContent);
-            //}
-
         }
     }
 }

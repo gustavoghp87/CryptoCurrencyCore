@@ -3,7 +3,6 @@ using cryptoCurrency.Services.Blocks;
 using cryptoCurrency.Services.Interfaces;
 using cryptoCurrency.Services.Transactions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,16 +17,16 @@ namespace cryptoCurrency.Services.Blockchains
         public BlockchainService(INodeService nodeService, ITransactionService transactionServ)
         {
             _blockchain = new();
-            _minerWallet = MinerService.Get();
+            _minerWallet = Miner.Get();
             _nodeService = nodeService;
             _transactionServ = transactionServ;
-            _blockchain.IssuerWallet = IssuerService.Get();
+            _blockchain.IssuerWallet = Issuer.Get();
             Initialize();
         }
         private async void Initialize()
         {
             _blockchain.Nodes = _nodeService.GetAll();
-            _nodeService.RegisterMe();
+            var registerMe = _nodeService.RegisterMe();
             Blockchain largestBC = _nodeService.GetLongestBlockchain();
             if (largestBC != null && largestBC.Blocks != null && largestBC.Blocks.Count != 0)
             {
@@ -62,10 +61,12 @@ namespace cryptoCurrency.Services.Blockchains
         }
         private async Task<bool> PayMeReward()
         {
+            decimal reward = Reward.Get(_blockchain.Blocks != null ? _blockchain.Blocks.Count : 0);
+            _blockchain.LastReward = reward;
             Transaction transaction = new()
             {
                 Amount = 0,
-                Fees = GetReward(),
+                Fees = reward,
                 Miner = _minerWallet.PublicKey,
                 Recipient = _minerWallet.PublicKey,
                 Sender = _blockchain.IssuerWallet.PublicKey,
@@ -75,21 +76,18 @@ namespace cryptoCurrency.Services.Blockchains
             transaction.Signature = signServ.GetSignature();
             return await _transactionServ.Add(transaction);
         }
-        private decimal GetReward()                 // decrese rewards to a half every 100 blocks
-        {
-            decimal reward = 50;
-            decimal auxiliar = _blockchain.Blocks != null ? _blockchain.Blocks.Count : 0;
-            while (auxiliar / 100 > 1)
-            {
-                auxiliar /= 100;
-                reward /= 2;
-            }
-            _blockchain.LastReward = reward;
-            return reward;
-        }
         public Blockchain Get()
         {
             return _blockchain;
+        }
+        public bool ReceiveNew(Blockchain blockchain)
+        {
+            bool response1 = ValidateBlockchain.IsValid(blockchain);
+            if (!response1) return false;
+            bool response2 = CompareTwo.IsBetter(blockchain, _blockchain);
+            if (!response2) return false;
+            _blockchain = blockchain;
+            return true;
         }
     }
 }

@@ -6,13 +6,15 @@ using System.Text;
 
 namespace cryptoCurrency.Services.Nodes
 {
-    public static class CentralServers
+    public static class ScaffoldServers
     {
         public static List<Uri> Get()
         {
-            List<Uri> lstCentralServers = new();
-            lstCentralServers.Add(new Uri("http://localhost:10000/nodes"));
-            return lstCentralServers;
+            List<Uri> lstInitialServers = new();
+            lstInitialServers.Add(new Uri("http://localhost:10000"));
+            lstInitialServers.Add(new Uri("http://localhost:10001"));
+            lstInitialServers.Add(new Uri("http://localhost:10002"));
+            return lstInitialServers;
         }
         //public static bool Connect(string nodeId)
         //{

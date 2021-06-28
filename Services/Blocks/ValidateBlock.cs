@@ -7,7 +7,7 @@ using System.Text;
 
 namespace cryptoCurrency.Services.Blocks
 {
-    public static class ValidateBlockService
+    public static class ValidateBlock
     {
         public static bool IsValid(Block block)
         {

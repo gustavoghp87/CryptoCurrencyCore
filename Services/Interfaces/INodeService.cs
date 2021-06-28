@@ -9,8 +9,7 @@ namespace cryptoCurrency.Services.Interfaces
         List<Node> GetAll();
         Blockchain GetLongestBlockchain();
         Task RegisterMe();
-        bool RegisterOne(string address);
+        bool RegisterOne(Node node);
         void SendNewBlockchain(Blockchain newBlockchain);
-        void UpdateList();
     }
 }

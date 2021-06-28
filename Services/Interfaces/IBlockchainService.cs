@@ -8,5 +8,6 @@ namespace cryptoCurrency.Services.Interfaces
     {
         Blockchain Get();
         Task<bool> Mine();
+        bool ReceiveNew(Blockchain blockchain);
     }
 }

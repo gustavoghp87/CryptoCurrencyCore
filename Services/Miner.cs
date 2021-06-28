@@ -2,7 +2,7 @@ using cryptoCurrency.Models;
 
 namespace cryptoCurrency.Services
 {
-    public static class MinerService
+    public static class Miner
     {
         public static Wallet Get()
         {

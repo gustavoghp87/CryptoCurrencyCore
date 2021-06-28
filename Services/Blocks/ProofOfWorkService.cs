@@ -15,10 +15,10 @@ namespace cryptoCurrency.Services.Blocks
         }
         private void Create(Block block)
         {
-            while (!ValidateBlockService.IsValid(block))
+            while (!ValidateBlock.IsValid(block))
                 block.Nonce++;
             _nonce = block.Nonce;
-            _hash = ValidateBlockService.GetHash(block);
+            _hash = ValidateBlock.GetHash(block);
         }
         public long GetNonce()
         {

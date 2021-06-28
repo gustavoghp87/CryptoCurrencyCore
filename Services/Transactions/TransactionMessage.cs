@@ -2,7 +2,7 @@ using cryptoCurrency.Models;
 
 namespace cryptoCurrency.Services.Transactions
 {
-    public static class TransactionMessageService
+    public static class TransactionMessage
     {
         public static string Generate(Transaction transaction)
         {

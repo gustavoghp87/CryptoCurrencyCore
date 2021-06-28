@@ -32,6 +32,13 @@ namespace cryptoCurrency.Controllers
             return Ok(_blockchain);
         }
 
+        [HttpPost("blockchain")]
+        public IActionResult ReceiveNew(Blockchain blockchain)
+        {
+            bool response = _blockchainServ.ReceiveNew(blockchain);
+            return Ok(response);
+        }
+
         [HttpGet("blockchain/mine")]
         public async Task<IActionResult> Mine()
         {

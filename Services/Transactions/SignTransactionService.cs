@@ -8,7 +8,7 @@ namespace cryptoCurrency.Services.Transactions
         public SignTransactionService(Transaction transaction, string privateKey)
         {
             _transaction = transaction;
-            _transaction.Miner = MinerService.Get().PublicKey;
+            _transaction.Miner = Miner.Get().PublicKey;
             Sign(privateKey);
         }
         private void Sign(string privateKey)
@@ -17,7 +17,7 @@ namespace cryptoCurrency.Services.Transactions
         }
         public string GetMessage()
         {
-            return TransactionMessageService.Generate(_transaction);
+            return TransactionMessage.Generate(_transaction);
         }
         public string GetSignature()
         {

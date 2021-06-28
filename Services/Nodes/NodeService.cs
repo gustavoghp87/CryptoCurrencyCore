@@ -7,6 +7,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace cryptoCurrency.Services.Nodes
@@ -17,64 +18,81 @@ namespace cryptoCurrency.Services.Nodes
         public NodeService()
         {
             _lstNodes = new();
-            GetFromCentralServers();
-            GetFromLongestBlockchain();
+            UpdateList();
+        }
+        private void UpdateList()
+        {
+            GetFromBaseServers();
             _lstNodes.ForEach(node => {
                 Console.WriteLine("Connected Nodes: " + node.Address);
             });
+            // TODO: get request alive man
         }
-        private void GetFromCentralServers()
+        private void GetFromBaseServers()
         {
-            List<Uri> lstCentralServers = CentralServers.Get();
+            List<Uri> lstCentralServers = ScaffoldServers.Get();
             foreach (var centralServer in lstCentralServers)
             {
                 try
                 {
-                    var request = (HttpWebRequest)WebRequest.Create(centralServer);
+                    var request = (HttpWebRequest)WebRequest.Create(centralServer + "/node");
                     var response = (HttpWebResponse)request.GetResponse();
                     if (response.StatusCode != HttpStatusCode.OK) continue;
                     Console.WriteLine(response);
                     string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
                     var lstNodes = JsonConvert.DeserializeObject<List<Node>>(json);
+                    if (lstNodes == null) continue;
                     lstNodes.ForEach(node => {
                         if (!_lstNodes.Contains(node)) _lstNodes.Add(node);
                     });
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
+                catch (Exception e) { Console.WriteLine(e.Message); }
             };
         }
-        private void GetFromLongestBlockchain()
+        private void GetFromBlockchain(List<Node> lstNodes)
         {
-
+            if (lstNodes == null) return;
+            lstNodes.ForEach(node => {
+                if (!_lstNodes.Contains(node)) _lstNodes.Add(node);
+            });
+        }
+        public Blockchain GetLongestBlockchain()
+        {
+            Blockchain blockchain = new();
+            if (_lstNodes != null && _lstNodes.Count != 0)
+                blockchain = LongestBlockchainOnNet.Get(_lstNodes);      // update _lstNodes ??
+            GetFromBlockchain(blockchain.Nodes);
+            // compare this one with mine's
+            return blockchain;
         }
         public List<Node> GetAll()
         {
             return _lstNodes;
         }
-
-
         public async Task RegisterMe()
         {
             int counter = 0;
             if (_lstNodes == null || _lstNodes.Count == 0) return;
             foreach (Node node in _lstNodes)
             {
-                var response = await new HttpClient().GetAsync(node.Address + "node/registry");
+                var httpContent = new StringContent("", Encoding.UTF8, "application/json");
+                var response = await new HttpClient().PostAsJsonAsync(node.Address + "node/registry", httpContent);
                 if (response.IsSuccessStatusCode) counter++;
             }
+            Console.WriteLine("Registered in " + counter + " servers");
+            
+            // var httpClient = new HttpClient();
+            // var stringPayload = JsonConvert.SerializeObject(new { Ip = "http://localhost:5000" });
+            // var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
+            // var httpResponse = await httpClient.PostAsync("http://localhost:10000/registry", httpContent);
+            // if (!httpResponse.IsSuccessStatusCode) return;
+            
             Console.WriteLine(counter);
         }
-        public bool RegisterOne(string address)
+        public bool RegisterOne(Node node)
         {
-            var newNode = new Node
-            {
-                Address = new Uri(address.EndsWith('/') ? address.Substring(0, -1) : address)
-            };
-            _lstNodes.Add(newNode);
-            return CheckNew(newNode);
+            _lstNodes.Add(node);
+            return CheckNew(node);
         }
         private bool CheckNew(Node newNode)
         {
@@ -92,43 +110,11 @@ namespace cryptoCurrency.Services.Nodes
         }
         public void SendNewBlockchain(Blockchain newBlockchain)
         {
-            if (_lstNodes == null)
-                foreach (Node node in _lstNodes)
-                {
-                    new HttpClient().PostAsJsonAsync(node.ToString() + "/new-blockchain", newBlockchain);
-                }
-        }
-
-
-        //public string RegisterMany(string[] nodes)
-        //{
-        //    var builder = new StringBuilder();
-        //    foreach (string url in nodes)
-        //    {
-        //        RegisterOne(url);
-        //        builder.Append($"{url}, ");
-        //    }
-        //    builder.Insert(0, $"{nodes.Length} new nodes have been added: ");
-        //    string result = builder.ToString();
-        //    return result.Substring(0, result.Length - 2);
-        //}
-
-        public void UpdateList()
-        {
-            foreach (Node node in _lstNodes)
+            if (_lstNodes == null) return;
+            _lstNodes.ForEach(node =>
             {
-                _lstNodes.Clear();
-                // get request alive man
-                if (true) _lstNodes.Add(node);
-            }
-        }
-
-        public Blockchain GetLongestBlockchain()
-        {
-            Blockchain blockchain = new();
-            List<Blockchain> lstBlockchains = new();
-            if (_lstNodes != null && _lstNodes.Count != 0) LongestBlockchainOnNet.GetFromNet(_lstNodes);      // update _lstNodes ??
-            return blockchain;
+                new HttpClient().PostAsJsonAsync(node.ToString() + "/new-blockchain", newBlockchain);
+            });
         }
     }
 }

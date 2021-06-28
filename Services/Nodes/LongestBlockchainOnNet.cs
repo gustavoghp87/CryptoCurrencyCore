@@ -13,7 +13,7 @@ namespace cryptoCurrency.Services.Nodes
         private static Blockchain _blockchain;
         private static List<Blockchain> _lstBlockchains;
         private static List<Node> _lstNodes;
-        public static Blockchain GetFromNet(List<Node> lstNodes)
+        public static Blockchain Get(List<Node> lstNodes)
         {
             _lstNodes = lstNodes;
             _blockchain = new();
@@ -31,26 +31,16 @@ namespace cryptoCurrency.Services.Nodes
             {
                 try
                 {
-                    var url = new Uri(node.Address + "chain");
+                    var url = new Uri(node.Address + "/chain");
                     Console.WriteLine(url.ToString());
                     var request = (HttpWebRequest)WebRequest.Create(url);
                     var response = (HttpWebResponse)request.GetResponse();
-                    //if (response.StatusCode == HttpStatusCode.OK)
-                    //{
-                    var model = new
-                    {
-                        blockchain = new Blockchain(),
-                        length = 0
-                    };
+                    if (response.StatusCode != HttpStatusCode.OK) continue;
                     string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
-                    var data = JsonConvert.DeserializeAnonymousType(json, model);
-                    _lstBlockchains.Add(data.blockchain);
-                    //}
+                    Blockchain blockchain = JsonConvert.DeserializeObject<Blockchain>(json);
+                    _lstBlockchains.Add(blockchain);
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
+                catch (Exception e) { Console.WriteLine(e.Message); }
             }
         }
         private static void GetLargest()

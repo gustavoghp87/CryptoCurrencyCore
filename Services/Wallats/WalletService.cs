@@ -18,14 +18,14 @@ namespace cryptoCurrency.Services
         public static string SignMessage(Models.Transaction transaction, string privateKey)
         {
             var secret = Network.Main.CreateBitcoinSecret(privateKey);
-            var message = TransactionMessageService.Generate(transaction);
+            var message = TransactionMessage.Generate(transaction);
             var signature = secret.PrivateKey.SignMessage(message);
             return signature;
         }
         public static bool IsVerifiedMessage(Models.Transaction transaction)
         {
             string senderPublicKey = transaction.Sender;
-            string originalMessage = TransactionMessageService.Generate(transaction);
+            string originalMessage = TransactionMessage.Generate(transaction);
             string signedMessage = transaction.Signature;
             IPubkeyHashUsable address = (IPubkeyHashUsable)BitcoinAddress.Create(senderPublicKey, Network.Main);
             bool result = address.VerifyMessage(originalMessage, signedMessage);
