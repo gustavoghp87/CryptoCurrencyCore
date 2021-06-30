@@ -31,37 +31,50 @@ namespace cryptoCurrency.Services.Nodes
         private void GetFromBaseServers()
         {
             List<Uri> lstCentralServers = ScaffoldServers.Get();
-            foreach (var centralServer in lstCentralServers)
-            {
-                try
-                {
-                    var request = (HttpWebRequest)WebRequest.Create(centralServer + "/node");
-                    var response = (HttpWebResponse)request.GetResponse();
-                    if (response.StatusCode != HttpStatusCode.OK) continue;
-                    Console.WriteLine(response);
-                    string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
-                    var lstNodes = JsonConvert.DeserializeObject<List<Node>>(json);
-                    if (lstNodes == null) continue;
-                    lstNodes.ForEach(node => {
-                        if (!_lstNodes.Contains(node)) _lstNodes.Add(node);
-                    });
-                }
-                catch (Exception e) { Console.WriteLine(e.Message); }
-            };
+            lstCentralServers.ForEach(centralServer => {
+                GetFromOne(centralServer);
+            });
         }
-        private void GetFromBlockchain(List<Node> lstNodes)
+        private void GetFromOne(Uri nodeAddress)
+        {
+            try
+            {
+                var request = (HttpWebRequest)WebRequest.Create(nodeAddress + "/node");
+                var response = (HttpWebResponse)request.GetResponse();
+                if (response.StatusCode != HttpStatusCode.OK) return;
+                Console.WriteLine(response);
+                string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                var lstNodes = JsonConvert.DeserializeObject<List<Node>>(json);
+                AddMany(lstNodes);
+            } catch (Exception e) { Console.WriteLine(e.Message); }
+        }
+        private void AddMany(List<Node> lstNodes)
         {
             if (lstNodes == null) return;
             lstNodes.ForEach(node => {
                 if (!_lstNodes.Contains(node)) _lstNodes.Add(node);
             });
         }
+        private bool CheckNew(Node newNode)
+        {
+            try
+            {
+                Console.WriteLine(newNode);
+                // post request
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
         public Blockchain GetLongestBlockchain()
         {
             Blockchain blockchain = new();
             if (_lstNodes != null && _lstNodes.Count != 0)
                 blockchain = LongestBlockchainOnNet.Get(_lstNodes);      // update _lstNodes ??
-            GetFromBlockchain(blockchain.Nodes);
+            AddMany(blockchain.Nodes);
             // compare this one with mine's
             return blockchain;
         }
@@ -92,21 +105,8 @@ namespace cryptoCurrency.Services.Nodes
         public bool RegisterOne(Node node)
         {
             _lstNodes.Add(node);
+            GetFromOne(node.Address);
             return CheckNew(node);
-        }
-        private bool CheckNew(Node newNode)
-        {
-            try
-            {
-                Console.WriteLine(newNode);
-                // post request
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return false;
-            }
         }
         public void SendNewBlockchain(Blockchain newBlockchain)
         {
