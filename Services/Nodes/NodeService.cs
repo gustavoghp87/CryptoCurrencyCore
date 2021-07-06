@@ -39,7 +39,7 @@ namespace cryptoCurrency.Services.Nodes
         {
             try
             {
-                var request = (HttpWebRequest)WebRequest.Create(nodeAddress + "/node");
+                var request = (HttpWebRequest)WebRequest.Create(nodeAddress + "/api/node");
                 var response = (HttpWebResponse)request.GetResponse();
                 if (response.StatusCode != HttpStatusCode.OK) return;
                 Console.WriteLine(response);
@@ -73,8 +73,10 @@ namespace cryptoCurrency.Services.Nodes
         {
             Blockchain blockchain = new();
             if (_lstNodes != null && _lstNodes.Count != 0)
-                blockchain = LongestBlockchainOnNet.Get(_lstNodes);      // update _lstNodes ??
-            AddMany(blockchain.Nodes);
+            {
+                blockchain = LongestBlockchainOnNet.Get(_lstNodes);
+                if (blockchain != null && blockchain.Nodes != null) AddMany(blockchain.Nodes);
+            }
             // compare this one with mine's
             return blockchain;
         }
@@ -89,7 +91,7 @@ namespace cryptoCurrency.Services.Nodes
             foreach (Node node in _lstNodes)
             {
                 var httpContent = new StringContent("", Encoding.UTF8, "application/json");
-                var response = await new HttpClient().PostAsJsonAsync(node.Address + "node/registry", httpContent);
+                var response = await new HttpClient().PostAsJsonAsync(node.Address + "/api/node", httpContent);
                 if (response.IsSuccessStatusCode) counter++;
             }
             Console.WriteLine("Registered in " + counter + " servers");
@@ -104,8 +106,13 @@ namespace cryptoCurrency.Services.Nodes
         }
         public bool RegisterOne(Node node)
         {
-            _lstNodes.Add(node);
-            GetFromOne(node.Address);
+            bool exists = false;
+            _lstNodes.ForEach(nodeX => { if (nodeX.Address == node.Address) exists = true; } );
+            if (!exists)
+            {
+                _lstNodes.Add(node);
+                GetFromOne(node.Address);
+            }
             return CheckNew(node);
         }
         public void SendNewBlockchain(Blockchain newBlockchain)
@@ -113,7 +120,7 @@ namespace cryptoCurrency.Services.Nodes
             if (_lstNodes == null) return;
             _lstNodes.ForEach(node =>
             {
-                new HttpClient().PostAsJsonAsync(node.ToString() + "/new-blockchain", newBlockchain);
+                new HttpClient().PostAsJsonAsync(node.Address.ToString() + "/api/blockchain", newBlockchain);
             });
         }
     }

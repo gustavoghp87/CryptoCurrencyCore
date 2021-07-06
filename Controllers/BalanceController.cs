@@ -21,7 +21,8 @@ namespace cryptoCurrency.Controllers
             _transactionService = transactionService;
         }
 
-        [HttpGet("balance/{publicKey}")]     // TODO: change to encrypted mode
+        // [HttpGet("balance/{publicKey}")]
+        [HttpPost("/")]
         public IActionResult Get(string publicKey)
         {
             if (publicKey == "") return BadRequest();
