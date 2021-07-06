@@ -31,7 +31,7 @@ namespace cryptoCurrency.Services.Nodes
             {
                 try
                 {
-                    var url = new Uri(node.Address + "/chain");
+                    var url = new Uri(node.Address + "/api/blockchain");
                     Console.WriteLine(url.ToString());
                     var request = (HttpWebRequest)WebRequest.Create(url);
                     var response = (HttpWebResponse)request.GetResponse();
