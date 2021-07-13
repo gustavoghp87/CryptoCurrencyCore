@@ -12,12 +12,16 @@ namespace Tests
             Issuer.Get();
         }
 
-        [Fact]
-        public void Test2()
+        [Theory]
+        [InlineData("one")]
+        [InlineData("two")]
+        [InlineData("three")]
+        public void Test2(string some)
         {
+            Console.WriteLine(some);
             var miner = Miner.Get();
             Console.WriteLine(miner.PublicKey);
-            Assert.Equal(miner.PrivateKey, "L4fkiGDz1jdeTqo2rDUehWEWtDi3zhTnHwETi46zN9XGLoiAb9Rd");
+            Assert.Equal("L4fkiGDz1jdeTqo2rDUehWEWtDi3zhTnHwETi46zN9XGLoiAb9Rd", miner.PrivateKey);
         }
     }
 }

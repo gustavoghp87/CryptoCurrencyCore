@@ -1,3 +1,4 @@
+using CryptoCurrency.Controllers.Interfaces;
 using CryptoCurrency.Models;
 using CryptoCurrency.Services.Blockchains;
 using CryptoCurrency.Services.Interfaces;
@@ -11,10 +12,10 @@ namespace CryptoCurrency.Controllers
     [Route("api/")]
     [EnableCors("MyCors")]
     [Produces("application/json")]
-    public class BlockchainController : ControllerBase
+    public class BlockchainController : ControllerBase, IBlockchainController
     {
         private Blockchain _blockchain;
-        private IBlockchainService _blockchainServ;
+        private readonly IBlockchainService _blockchainServ;
         public BlockchainController(IBlockchainService blockchainService)
         {
             _blockchainServ = blockchainService;
@@ -44,8 +45,8 @@ namespace CryptoCurrency.Controllers
         {
             bool response = await _blockchainServ.Mine();
             if (!response) return BadRequest();
-            Update();
-            return Ok(_blockchain);
+            Blockchain blockchain = _blockchainServ.Get();
+            return Ok(blockchain);
         }
 
         [HttpGet("blockchain/validation")]
