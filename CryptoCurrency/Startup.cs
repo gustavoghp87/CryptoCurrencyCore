@@ -5,10 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
-using CryptoCurrency.Services.Blockchains;
-using CryptoCurrency.Services.Transactions;
-using CryptoCurrency.Services.Interfaces;
-using CryptoCurrency.Services.Nodes;
+using Services.Blockchains;
+using Services.Transactions;
+using Services.Interfaces;
+using Services.Nodes;
 
 namespace CryptoCurrency
 {

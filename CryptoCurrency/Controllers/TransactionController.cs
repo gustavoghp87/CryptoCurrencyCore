@@ -1,6 +1,6 @@
-using CryptoCurrency.Models;
-using CryptoCurrency.Services.Interfaces;
-using CryptoCurrency.Services.Transactions;
+using Models;
+using Services.Interfaces;
+using Services.Transactions;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;

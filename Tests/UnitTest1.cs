@@ -1,6 +1,6 @@
 using System;
 using Xunit;
-using CryptoCurrency.Services;
+using Models;
 
 namespace Tests
 {
@@ -9,7 +9,7 @@ namespace Tests
         [Fact]
         public void Test1()
         {
-            Issuer.Get();
+
         }
 
         [Theory]
@@ -19,7 +19,7 @@ namespace Tests
         public void Test2(string some)
         {
             Console.WriteLine(some);
-            var miner = Miner.Get();
+            var miner = Miner.MinerWallet;
             Console.WriteLine(miner.PublicKey);
             Assert.Equal("L4fkiGDz1jdeTqo2rDUehWEWtDi3zhTnHwETi46zN9XGLoiAb9Rd", miner.PrivateKey);
         }

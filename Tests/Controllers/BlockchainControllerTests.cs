@@ -2,9 +2,9 @@ using System.Net;
 using Xunit;
 using CryptoCurrency.Controllers;
 using Moq;
-using CryptoCurrency.Services.Interfaces;
+using Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using CryptoCurrency.Models;
+using Models;
 
 namespace Tests.Controllers
 {

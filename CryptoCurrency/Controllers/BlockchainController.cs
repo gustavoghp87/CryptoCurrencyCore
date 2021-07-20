@@ -1,7 +1,7 @@
 using CryptoCurrency.Controllers.Interfaces;
-using CryptoCurrency.Models;
-using CryptoCurrency.Services.Blockchains;
-using CryptoCurrency.Services.Interfaces;
+using Models;
+using Services.Blockchains;
+using Services.Interfaces;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -21,15 +21,11 @@ namespace CryptoCurrency.Controllers
             _blockchainServ = blockchainService;
             _blockchain = _blockchainServ.Get();
         }
-        private void Update()
-        {
-            _blockchain = _blockchainServ.Get();
-        }
 
         [HttpGet("blockchain")]
         public IActionResult Get()
         {
-            Update();
+            _blockchain = _blockchainServ.Get();
             return Ok(_blockchain);
         }
 
@@ -52,7 +48,7 @@ namespace CryptoCurrency.Controllers
         [HttpGet("blockchain/validation")]
         public IActionResult Validate()
         {
-            Update();
+            _blockchain = _blockchainServ.Get();
             bool response = ValidateBlockchain.IsValid(_blockchain);
             return Ok(response);
         }

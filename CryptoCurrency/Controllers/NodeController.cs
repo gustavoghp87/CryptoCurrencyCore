@@ -1,8 +1,9 @@
-using CryptoCurrency.Models;
-using CryptoCurrency.Services.Interfaces;
+using Models;
+using Services.Interfaces;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using Services.Nodes;
 
 namespace CryptoCurrency.Controllers
 {
@@ -17,20 +18,6 @@ namespace CryptoCurrency.Controllers
         {
             _nodeService = nodeService;
         }
-        private void CleanUrl(ref string url)
-        {
-            try
-            {
-                int first = url.StartsWith("https://") ? 8 : 7;
-                int length = url.Length;
-                string sub = url.Substring(first, length-first);
-                int limit;
-                if (sub.IndexOf("/") != -1) limit = first + sub.IndexOf("/");
-                else limit = length;
-                url = url.Substring(0, limit);
-            }
-            catch (Exception e) { Console.Write(e.Message); }
-        }
 
         [HttpGet("node")]
         public IActionResult GetNodes()
@@ -43,7 +30,7 @@ namespace CryptoCurrency.Controllers
         {
             string url = Request.Headers["Referer"].ToString();
             if (!url.StartsWith("https://") && !url.StartsWith("http://")) return BadRequest();
-            CleanUrl(ref url);
+            CleanUrl.Clean(ref url);
             Node newNode = new();
             newNode.Address = new Uri(url);
             _nodeService.RegisterOne(newNode);
