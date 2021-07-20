@@ -13,13 +13,6 @@ namespace Services.Blocks
             _hash = "";
             Create(block);
         }
-        private void Create(Block block)
-        {
-            while (!ValidateBlock.IsValid(block))
-                block.Nonce++;
-            _nonce = block.Nonce;
-            _hash = ValidateBlock.GetHash(block);
-        }
         public long GetNonce()
         {
             return _nonce;
@@ -27,6 +20,14 @@ namespace Services.Blocks
         public string GetHash()
         {
             return _hash;
+        }
+        
+        private void Create(Block block)
+        {
+            while (!ValidateBlock.IsValid(block))
+                block.Nonce++;
+            _nonce = block.Nonce;
+            _hash = ValidateBlock.GetHash(block);
         }
     }
 }

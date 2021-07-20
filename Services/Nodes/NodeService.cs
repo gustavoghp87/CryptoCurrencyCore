@@ -20,55 +20,7 @@ namespace Services.Nodes
             _lstNodes = new();
             UpdateList();
         }
-        private void UpdateList()
-        {
-            GetFromBaseServers();
-            _lstNodes.ForEach(node => {
-                Console.WriteLine("Connected Nodes: " + node.Address);
-            });
-            // TODO: get request alive man
-        }
-        private void GetFromBaseServers()
-        {
-            List<Uri> lstCentralServers = ScaffoldServers.Get();
-            lstCentralServers.ForEach(centralServer => {
-                GetFromOne(centralServer);
-            });
-        }
-        private void GetFromOne(Uri nodeAddress)
-        {
-            try
-            {
-                var request = (HttpWebRequest)WebRequest.Create(nodeAddress + "/api/node");
-                var response = (HttpWebResponse)request.GetResponse();
-                if (response.StatusCode != HttpStatusCode.OK) return;
-                Console.WriteLine(response);
-                string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
-                var lstNodes = JsonConvert.DeserializeObject<List<Node>>(json);
-                AddMany(lstNodes);
-            } catch (Exception e) { Console.WriteLine(e.Message); }
-        }
-        private void AddMany(List<Node> lstNodes)
-        {
-            if (lstNodes == null) return;
-            lstNodes.ForEach(node => {
-                if (!_lstNodes.Contains(node)) _lstNodes.Add(node);
-            });
-        }
-        private bool CheckNew(Node newNode)
-        {
-            try
-            {
-                Console.WriteLine(newNode);
-                // post request
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return false;
-            }
-        }
+        
         public Blockchain GetLongestBlockchain()
         {
             Blockchain blockchain = new();
@@ -122,6 +74,56 @@ namespace Services.Nodes
             {
                 new HttpClient().PostAsJsonAsync(node.Address.ToString() + "/api/blockchain", newBlockchain);
             });
+        }
+        
+        private void UpdateList()
+        {
+            GetFromBaseServers();
+            _lstNodes.ForEach(node => {
+                Console.WriteLine("Connected Nodes: " + node.Address);
+            });
+            // TODO: get request alive man
+        }
+        private void GetFromBaseServers()
+        {
+            List<Uri> lstCentralServers = ScaffoldServers.Get();
+            lstCentralServers.ForEach(centralServer => {
+                GetFromOne(centralServer);
+            });
+        }
+        private void GetFromOne(Uri nodeAddress)
+        {
+            try
+            {
+                var request = (HttpWebRequest)WebRequest.Create(nodeAddress + "/api/node");
+                var response = (HttpWebResponse)request.GetResponse();
+                if (response.StatusCode != HttpStatusCode.OK) return;
+                Console.WriteLine(response);
+                string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                var lstNodes = JsonConvert.DeserializeObject<List<Node>>(json);
+                AddMany(lstNodes);
+            } catch (Exception e) { Console.WriteLine(e.Message); }
+        }
+        private void AddMany(List<Node> lstNodes)
+        {
+            if (lstNodes == null) return;
+            lstNodes.ForEach(node => {
+                if (!_lstNodes.Contains(node)) _lstNodes.Add(node);
+            });
+        }
+        private bool CheckNew(Node newNode)
+        {
+            try
+            {
+                Console.WriteLine(newNode);
+                // post request
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
         }
     }
 }

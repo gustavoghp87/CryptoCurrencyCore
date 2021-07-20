@@ -21,16 +21,17 @@ namespace Services.Blocks
             _block.Hash = "";
             Mine();
         }
+        public Block GetMined()
+        {
+            return _block;
+        }
+        
         private void Mine()
         {
             ProofOfWorkService proofServ = new(_block);
             _block.Nonce = proofServ.GetNonce();
             _block.Hash = proofServ.GetHash();
             //ValidateBlockService.GetBestHash(_block);        // not connected
-        }
-        public Block GetMined()
-        {
-            return _block;
         }
     }
 }

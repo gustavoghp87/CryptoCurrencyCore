@@ -46,12 +46,6 @@ namespace Services.Blocks
             Console.WriteLine("Best Hash: " + bestHash + ", best Nonce: " + bestNonce);
             return block;
         }
-        private static string GetHigher(string hash1, string hash2)
-        {
-            string[] hashes = new string[] { hash1, hash2 };
-            string[] ordered = (from x in hashes orderby x select x).ToArray();
-            return ordered.ElementAt(0);
-        }
         public static string GetHash(Block block)
         {
             string guess = GenerateMessage(block);
@@ -61,6 +55,13 @@ namespace Services.Blocks
             foreach (byte x in hash)
                 hashBuilder.Append($"{x:x2}");
             return hashBuilder.ToString();
+        }
+        
+        private static string GetHigher(string hash1, string hash2)
+        {
+            string[] hashes = new string[] { hash1, hash2 };
+            string[] ordered = (from x in hashes orderby x select x).ToArray();
+            return ordered.ElementAt(0);
         }
         private static string GenerateMessage(Block block)
         {
@@ -72,5 +73,5 @@ namespace Services.Blocks
             return $"{block.Index}-[{block.Timestamp:yyyy-MM-dd HH:mm:ss}]-{block.Nonce}-{block.PreviousHash}-{signs}";
         }
             // TODO: Difficulty in message ??
-        }
+    }
 }

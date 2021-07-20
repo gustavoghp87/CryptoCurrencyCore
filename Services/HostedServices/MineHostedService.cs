@@ -19,14 +19,6 @@ namespace Services.Blockchains
             _timer = new ST.Timer(InitMiningCycle, null, TimeSpan.Zero, TimeSpan.FromSeconds(60));
             return Task.CompletedTask;
         }
-        private void InitMiningCycle(object o)
-        {
-            long unixTimeSeconds = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
-            //Console.WriteLine("Sending best proof of work to network..." + unixTimeSeconds);
-            //Console.WriteLine("Sending post request to Controller to begin mining...");
-            var httpResponse = new HttpClient().GetAsync("https://localhost:5001/blockchain/mine");
-            // TODO: some kind of verification
-        }
         public Task StopAsync(ST.CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
@@ -34,6 +26,15 @@ namespace Services.Blockchains
         public void Dispose()
         {
             _timer?.Dispose();
+        }
+
+        private void InitMiningCycle(object o)
+        {
+            long unixTimeSeconds = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
+            //Console.WriteLine("Sending best proof of work to network..." + unixTimeSeconds);
+            //Console.WriteLine("Sending post request to Controller to begin mining...");
+            var httpResponse = new HttpClient().GetAsync("https://localhost:5001/blockchain/mine");
+            // TODO: some kind of verification
         }
     }
 }

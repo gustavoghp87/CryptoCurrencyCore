@@ -1,7 +1,6 @@
 using Models;
 using Services.Blocks;
 using Services.Interfaces;
-using Services.Transactions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,13 +13,16 @@ namespace Services.Blockchains
         private readonly Wallet _minerWallet;
         private readonly INodeService _nodeService;
         private readonly ITransactionService _transactionServ;
-        public BlockchainService(INodeService nodeService, ITransactionService transactionServ)
+        private ISignTransactionService _signTransactionServ;
+        public BlockchainService(INodeService nodeService, ITransactionService transactionServ,
+            ISignTransactionService signTransactionService)
         {
             _blockchain = new();
             _minerWallet = Miner.MinerWallet;
             _nodeService = nodeService;
             _transactionServ = transactionServ;
             _blockchain.IssuerWallet = Issuer.IssuerWallet;
+            _signTransactionServ = signTransactionService;
             Initialize();
         }
         private async void Initialize()
@@ -72,8 +74,8 @@ namespace Services.Blockchains
                 Sender = _blockchain.IssuerWallet.PublicKey,
                 Timestamp = DateTime.UtcNow
             };
-            SignTransactionService signServ = new(transaction, _blockchain.IssuerWallet.PrivateKey);
-            transaction.Signature = signServ.GetSignature();
+            _signTransactionServ.Initialize(transaction, _blockchain.IssuerWallet.PrivateKey);
+            transaction.Signature = _signTransactionServ.GetSignature();
             return await _transactionServ.Add(transaction);
         }
         public Blockchain Get()

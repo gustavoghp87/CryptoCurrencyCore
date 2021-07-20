@@ -1,5 +1,6 @@
 using Models;
 using Newtonsoft.Json;
+using Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace Services.Blockchains
 {
-    public class BalanceService
+    public class BalanceService : IBalanceService
     {
-        private readonly string _senderPublicKey;
-        private readonly List<Transaction> _lstCurrentTransactions;
+        private string _senderPublicKey;
+        private ICollection<Transaction> _lstCurrentTransactions;
         private Blockchain _blockchain;
-        public BalanceService(string publicKey, List<Transaction> lstCurrentTransactions, Blockchain blockchain = null)
+        public void Initialize(string publicKey, ICollection<Transaction> lstCurrentTransactions, Blockchain blockchain = null)
         {
             _senderPublicKey = publicKey;
             _lstCurrentTransactions = lstCurrentTransactions;

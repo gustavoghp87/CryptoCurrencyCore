@@ -1,5 +1,4 @@
 using Models;
-using Services.Blockchains;
 using Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,9 +8,11 @@ namespace Services.Transactions
     public class TransactionService : ITransactionService
     {
         private List<Transaction> _lstTransactions;
-        public TransactionService()
+        private IBalanceService _balanceServ;
+        public TransactionService(IBalanceService balanceServ)
         {
             _lstTransactions = new();
+            _balanceServ = balanceServ;
         }
         public async Task<bool> Add(Transaction transactionReq)
         {
@@ -31,6 +32,15 @@ namespace Services.Transactions
             // SendToNodes();
             return success;
         }
+        public List<Transaction> GetAll()
+        {
+            return _lstTransactions;
+        }
+        public void Clear()
+        {
+            _lstTransactions.Clear();
+        }
+
         //private bool GenerateTransaction(Transaction transaction)
         //{
         // validar Timestamp dentro de la franja del bloque
@@ -71,17 +81,9 @@ namespace Services.Transactions
                     if (auxiliar > 1) return false;
                 }
             }
-            BalanceService balanceServ = new BalanceService(transaction.Sender, _lstTransactions);
-            decimal balance = await balanceServ.GetAsync();
+            _balanceServ.Initialize(transaction.Sender, _lstTransactions);
+            decimal balance = await _balanceServ.GetAsync();
             return balance >= transaction.Amount + transaction.Fees;
-        }
-        public List<Transaction> GetAll()
-        {
-            return _lstTransactions;
-        }
-        public void Clear()
-        {
-            _lstTransactions.Clear();
         }
     }
 }

@@ -1,19 +1,16 @@
 using Models;
+using Services.Interfaces;
 
 namespace Services.Transactions
 {
-    public class SignTransactionService
+    public class SignTransactionService : ISignTransactionService
     {
         private Transaction _transaction;
-        public SignTransactionService(Transaction transaction, string privateKey)
+        public void Initialize(Transaction transaction, string privateKey)
         {
             _transaction = transaction;
             _transaction.Miner = Miner.MinerWallet.PublicKey;
             Sign(privateKey);
-        }
-        private void Sign(string privateKey)
-        {
-            _transaction.Signature = WalletService.SignMessage(_transaction, privateKey);
         }
         public string GetMessage()
         {
@@ -22,6 +19,10 @@ namespace Services.Transactions
         public string GetSignature()
         {
             return _transaction.Signature;
+        }
+        private void Sign(string privateKey)
+        {
+            _transaction.Signature = WalletService.SignMessage(_transaction, privateKey);
         }
     }
 }
