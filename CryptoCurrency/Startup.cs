@@ -45,6 +45,8 @@ namespace CryptoCurrency
             services.AddSingleton<IBlockchainService, BlockchainService>();
             services.AddSingleton<ITransactionService, TransactionService>();
             services.AddSingleton<INodeService, NodeService>();
+            services.AddTransient<IBalanceService, BalanceService>();
+            services.AddTransient<ISignTransactionService, SignTransactionService>();
             services.AddHostedService<MineHostedService>();
         }
 

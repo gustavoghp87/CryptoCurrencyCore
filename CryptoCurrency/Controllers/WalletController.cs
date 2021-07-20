@@ -1,9 +1,9 @@
 using Models;
-using Services.Blockchains;
 using Services.Interfaces;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using Services;
 
 namespace CryptoCurrency.Controllers
 {
@@ -11,24 +11,34 @@ namespace CryptoCurrency.Controllers
     [Route("api/")]
     [EnableCors("MyCors")]
     [Produces("application/json")]
-    public class BalanceController : ControllerBase
+    public class WalletController : ControllerBase
     {  
         private IBlockchainService _blockchainServ;
         private ITransactionService _transactionService;
-        public BalanceController(IBlockchainService blockchainService, ITransactionService transactionService)
+        private IBalanceService _balanceServ;
+        public WalletController(IBlockchainService blockchainService, ITransactionService transactionService,
+            IBalanceService balanceServ)
         {
             _blockchainServ = blockchainService;
             _transactionService = transactionService;
+            _balanceServ = balanceServ;
+        }
+
+        [HttpGet("/")]
+        public IActionResult GetNew()
+        {
+            Wallet wallet = WalletService.Generate();
+            return Ok(wallet);
         }
 
         // [HttpGet("balance/{publicKey}")]
         [HttpPost("/")]
-        public IActionResult Get(string publicKey)
+        public IActionResult GetBalance(string publicKey)
         {
             if (publicKey == "") return BadRequest();
             List<Transaction> lstCurrentTransactions = _transactionService.GetAll();
-            BalanceService balanceServ = new BalanceService(publicKey, lstCurrentTransactions, _blockchainServ.Get());
-            decimal balance = balanceServ.Get();
+            _balanceServ.Initialize(publicKey, lstCurrentTransactions, _blockchainServ.Get());
+            decimal balance = _balanceServ.Get();
             return Ok(balance);
         }
     }

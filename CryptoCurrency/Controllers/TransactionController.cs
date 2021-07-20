@@ -17,11 +17,14 @@ namespace CryptoCurrency.Controllers
         private Blockchain _blockchain;
         private IBlockchainService _blockchainServ;
         private ITransactionService _transactionService;
-        public TransactionController(IBlockchainService blockchainService, ITransactionService transactionService)
+        private ISignTransactionService _signTransactionService;
+        public TransactionController(IBlockchainService blockchainService, ITransactionService transactionService,
+            SignTransactionService signTransactionService)
         {
             _blockchainServ = blockchainService;
             _blockchain = _blockchainServ.Get();
             _transactionService = transactionService;
+            _signTransactionService = signTransactionService;
         }
 
         [HttpGet("transaction")]
@@ -43,8 +46,8 @@ namespace CryptoCurrency.Controllers
         public IActionResult Sign(Transaction transactionRequest, string privateKey)
         {
             if (privateKey == null | privateKey == "") return BadRequest();
-            var serv = new SignTransactionService(transactionRequest, privateKey);
-            transactionRequest.Signature = serv.GetSignature();
+            _signTransactionService.Initialize(transactionRequest, privateKey);
+            transactionRequest.Signature = _signTransactionService.GetSignature();
             return Ok(transactionRequest);
         }
     }
