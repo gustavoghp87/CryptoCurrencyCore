@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,5 +9,6 @@ namespace Services.Interfaces
         Task<bool> Add(Models.Transaction transactionReq);
         void Clear();
         List<Models.Transaction> GetAll();
+        void RenewDateTime(DateTime dateTime);
     }
 }

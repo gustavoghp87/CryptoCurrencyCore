@@ -1,5 +1,6 @@
 using Models;
 using Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,6 +10,8 @@ namespace Services.Transactions
     {
         private List<Transaction> _lstTransactions;
         private IBalanceService _balanceServ;
+        private DateTime _actualDateTime;
+        private readonly int _timeZone = 1;    // 1 minute
         public TransactionService(IBalanceService balanceServ)
         {
             _lstTransactions = new();
@@ -24,6 +27,7 @@ namespace Services.Transactions
             transaction.Sender = transactionReq.Sender;
             transaction.Signature = transactionReq.Signature;
             transaction.Timestamp = transactionReq.Timestamp;
+            if (!IsTimeValidated(transaction.Timestamp)) return false;
             if (transactionReq.Amount < 0 || transaction.Fees < 0) return false;
             if (transactionReq.Amount == 0 && transaction.Fees == 0) return false;
             if (transactionReq.Sender == Issuer.IssuerWallet.PublicKey && transactionReq.Amount > 0) return false;
@@ -36,19 +40,25 @@ namespace Services.Transactions
         {
             return _lstTransactions;
         }
+        public void RenewDateTime(DateTime dateTime)
+        {
+            _actualDateTime = dateTime;
+        }
         public void Clear()
         {
             _lstTransactions.Clear();
         }
 
-        //private bool GenerateTransaction(Transaction transaction)
-        //{
-        // validar Timestamp dentro de la franja del bloque
-        //  if (!IsVerified(transaction)) transaction = null;
-        //}
+        // private methods
         private static bool IsVerified(Transaction transaction)
         {
             return WalletService.IsVerifiedMessage(transaction);
+        }
+        private bool IsTimeValidated(DateTime timestamp)
+        {
+            DateTime timeLimit = _actualDateTime.AddMinutes(_timeZone);
+            if (timestamp > _actualDateTime && timestamp < timeLimit) return true;
+            else return false;
         }
         private async Task<bool> Create(Transaction transaction)
         {
@@ -70,7 +80,7 @@ namespace Services.Transactions
         {
             if (transaction.Sender == Issuer.IssuerWallet.PublicKey) return true;    // limite this to issues
 
-            // ver que el signature no se haya usado ya
+            // TODO: signature was used before ?
             int auxiliar = 0;
             foreach (Transaction aTransaction in _lstTransactions)
             {

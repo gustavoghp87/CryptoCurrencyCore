@@ -20,6 +20,8 @@ namespace Services.Transactions
         {
             return _transaction.Signature;
         }
+
+        // private methods
         private void Sign(string privateKey)
         {
             _transaction.Signature = WalletService.SignMessage(_transaction, privateKey);
