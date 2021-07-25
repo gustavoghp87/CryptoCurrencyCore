@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using Services.Nodes;
+using CryptoCurrency.Controllers.Interfaces;
 
 namespace CryptoCurrency.Controllers
 {
@@ -11,7 +12,7 @@ namespace CryptoCurrency.Controllers
     [Route("api/")]
     [EnableCors("MyCors")]
     [Produces("application/json")]
-    public class NodeController : ControllerBase
+    public class NodeController : ControllerBase, INodeController
     {
         private INodeService _nodeService;
         public NodeController(INodeService nodeService)

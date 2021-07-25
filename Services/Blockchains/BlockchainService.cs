@@ -13,7 +13,7 @@ namespace Services.Blockchains
         private readonly Wallet _minerWallet;
         private readonly INodeService _nodeService;
         private readonly ITransactionService _transactionServ;
-        private ISignTransactionService _signTransactionServ;
+        private readonly ISignTransactionService _signTransactionServ;
         public BlockchainService(INodeService nodeService, ITransactionService transactionServ,
             ISignTransactionService signTransactionService)
         {
@@ -28,7 +28,7 @@ namespace Services.Blockchains
         private async void Initialize()
         {
             _blockchain.Nodes = _nodeService.GetAll();
-            var registerMe = _nodeService.RegisterMe();
+            // var registerMe = _nodeService.RegisterMe();
             Blockchain largestBC = _nodeService.GetLongestBlockchain();
             if (largestBC != null && largestBC.Blocks != null && largestBC.Blocks.Count != 0)
             {

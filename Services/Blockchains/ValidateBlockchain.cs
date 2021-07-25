@@ -27,8 +27,7 @@ namespace Services.Blockchains
                 {
                     if (transaction.Sender == Issuer.IssuerWallet.PublicKey)
                     {
-                        if (transaction.Amount != Reward.Get(i)) return false;
-                        if (transaction.Fees != 0) return false;
+                        if (transaction.Amount != 0 && transaction.Fees != Reward.Get(i)) return false;
                         issuerCounter++;
                     }
                     if (!WalletService.IsVerifiedMessage(transaction)) return false;

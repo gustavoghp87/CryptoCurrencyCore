@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CryptoCurrency.Controllers.Interfaces;
 
 namespace CryptoCurrency.Controllers
 {
@@ -12,7 +13,7 @@ namespace CryptoCurrency.Controllers
     [Route("api/")]
     [EnableCors("MyCors")]
     [Produces("application/json")]
-    public class TransactionController : ControllerBase
+    public class TransactionController : ControllerBase, ITransactionController
     {
         private Blockchain _blockchain;
         private IBlockchainService _blockchainServ;

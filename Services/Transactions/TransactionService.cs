@@ -56,9 +56,10 @@ namespace Services.Transactions
         }
         private bool IsTimeValidated(DateTime timestamp)
         {
-            DateTime timeLimit = _actualDateTime.AddMinutes(_timeZone);
-            if (timestamp > _actualDateTime && timestamp < timeLimit) return true;
-            else return false;
+            //DateTime timeLimit = _actualDateTime.AddMinutes(_timeZone);
+            //if (timestamp > _actualDateTime && timestamp < timeLimit) return true;
+            //else return false;
+            return true;
         }
         private async Task<bool> Create(Transaction transaction)
         {

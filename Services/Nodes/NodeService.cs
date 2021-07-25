@@ -63,7 +63,7 @@ namespace Services.Nodes
             if (!exists)
             {
                 _lstNodes.Add(node);
-                GetFromOne(node.Address);
+                GetFromOne(node);
             }
             return CheckNew(node);
         }
@@ -80,33 +80,33 @@ namespace Services.Nodes
         {
             GetFromBaseServers();
             _lstNodes.ForEach(node => {
-                Console.WriteLine("Connected Nodes: " + node.Address);
+                Console.WriteLine("Connected Node: " + node.Address);
             });
             // TODO: get request alive man
         }
         private void GetFromBaseServers()
         {
-            List<Uri> lstCentralServers = ScaffoldServers.Get();
+            List<Node> lstCentralServers = ScaffoldServers.Get();
             lstCentralServers.ForEach(centralServer => {
                 GetFromOne(centralServer);
             });
         }
-        private void GetFromOne(Uri nodeAddress)
+        private void GetFromOne(Node node)
         {
             try
             {
-                var request = (HttpWebRequest)WebRequest.Create(nodeAddress + "/api/node");
+                var request = (HttpWebRequest)WebRequest.Create(node.Address + "api/node");
                 var response = (HttpWebResponse)request.GetResponse();
                 if (response.StatusCode != HttpStatusCode.OK) return;
                 Console.WriteLine(response);
                 string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
                 var lstNodes = JsonConvert.DeserializeObject<List<Node>>(json);
                 AddMany(lstNodes);
-            } catch (Exception e) { Console.WriteLine(e.Message); }
+            } catch (Exception e) { Console.WriteLine(node.Address + "api/node: " + e.Message); }
         }
         private void AddMany(List<Node> lstNodes)
         {
-            if (lstNodes == null) return;
+            if (lstNodes == null || lstNodes.Count == 0) return;
             lstNodes.ForEach(node => {
                 if (!_lstNodes.Contains(node)) _lstNodes.Add(node);
             });

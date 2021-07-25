@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace CryptoCurrency.Controllers.Interfaces
 {
-    public interface IBlockchainController
+    internal interface IBlockchainController
     {
         IActionResult Get();
         Task<IActionResult> Mine();

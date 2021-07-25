@@ -1,3 +1,4 @@
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -8,12 +9,15 @@ namespace Services.Nodes
 {
     public static class ScaffoldServers
     {
-        public static List<Uri> Get()
+        public static List<Node> Get()
         {
-            List<Uri> lstInitialServers = new();
-            lstInitialServers.Add(new Uri("http://localhost:10000"));
-            lstInitialServers.Add(new Uri("http://localhost:10001"));
-            lstInitialServers.Add(new Uri("http://localhost:10002"));
+            List<Node> lstInitialServers = new();
+            //Node node1 = new() { Address = new Uri("https://localhost:5001") };
+            //lstInitialServers.Add(node1);
+            //Node node2 = new() { Address = new Uri("https://localhost:5002") };
+            //lstInitialServers.Add(node2);
+            //Node node3 = new() { Address = new Uri("https://localhost:5003") };
+            //lstInitialServers.Add(node3);
             return lstInitialServers;
         }
         //public static bool Connect(string nodeId)
