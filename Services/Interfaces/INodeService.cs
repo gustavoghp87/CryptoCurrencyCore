@@ -8,6 +8,7 @@ namespace Services.Interfaces
     {
         List<Node> GetAll();
         Blockchain GetLongestBlockchain();
+        void Initialize(string apiUrl);
         Task RegisterMe();
         bool RegisterOne(Node node);
         void SendNewBlockchain(Blockchain newBlockchain);

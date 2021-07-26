@@ -1,10 +1,10 @@
-using Models;
-using Services.Interfaces;
+using CryptoCurrency.Controllers.Interfaces;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using Models;
+using Services.Interfaces;
 using Services.Nodes;
-using CryptoCurrency.Controllers.Interfaces;
+using System;
 
 namespace CryptoCurrency.Controllers
 {
@@ -14,7 +14,7 @@ namespace CryptoCurrency.Controllers
     [Produces("application/json")]
     public class NodeController : ControllerBase, INodeController
     {
-        private INodeService _nodeService;
+        private readonly INodeService _nodeService;
         public NodeController(INodeService nodeService)
         {
             _nodeService = nodeService;
@@ -30,6 +30,8 @@ namespace CryptoCurrency.Controllers
         public IActionResult AddNode()
         {
             string url = Request.Headers["Referer"].ToString();
+            Console.WriteLine("URL: ***************************************: " + url);
+            if (url + "/" == Program.AppUrl) return Ok();
             if (!url.StartsWith("https://") && !url.StartsWith("http://")) return BadRequest();
             CleanUrl.Clean(ref url);
             Node newNode = new();

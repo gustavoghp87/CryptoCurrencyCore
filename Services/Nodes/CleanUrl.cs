@@ -10,7 +10,7 @@ namespace Services.Nodes
             {
                 int first = url.StartsWith("https://") ? 8 : 7;
                 int length = url.Length;
-                string sub = url.Substring(first, length-first);
+                string sub = url[first..length];
                 int limit;
                 if (sub.IndexOf("/") != -1) limit = first + sub.IndexOf("/");
                 else limit = length;

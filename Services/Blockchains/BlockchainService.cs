@@ -23,12 +23,12 @@ namespace Services.Blockchains
             _transactionServ = transactionServ;
             _blockchain.IssuerWallet = Issuer.IssuerWallet;
             _signTransactionServ = signTransactionService;
-            Initialize();
         }
-        private async void Initialize()
+        public async void Initialize(string myIp)
         {
+            _nodeService.Initialize(myIp);
             _blockchain.Nodes = _nodeService.GetAll();
-            // var registerMe = _nodeService.RegisterMe();
+            _ = _nodeService.RegisterMe();
             Blockchain largestBC = _nodeService.GetLongestBlockchain();
             if (largestBC != null && largestBC.Blocks != null && largestBC.Blocks.Count != 0)
             {
@@ -36,6 +36,7 @@ namespace Services.Blockchains
             }
             else
             {
+                Console.WriteLine("#######################  Building new blockchain  #######################");
                 _blockchain.Blocks = new();
                 await Mine();
             }
@@ -57,10 +58,26 @@ namespace Services.Blockchains
             newBlock.DifficultyT = HashScore.Get(newBlock.Hash);
             _blockchain.Blocks.Add(newBlock);
             _blockchain.LastDifficulty = newBlock.DifficultyT;
+            _blockchain.Nodes = _nodeService.GetAll();            // TODO: add my ip
             _nodeService.SendNewBlockchain(_blockchain);
             _transactionServ.Clear();
             return true;
         }
+        public Blockchain Get()
+        {
+            return _blockchain;
+        }
+        public bool ReceiveNew(Blockchain blockchain)
+        {
+            bool response1 = ValidateBlockchain.IsValid(blockchain);
+            if (!response1) return false;
+            bool response2 = CompareTwoBlockchains.IsBetter(blockchain, _blockchain);
+            if (!response2) return false;
+            _blockchain = blockchain;
+            return true;
+        }
+
+        #region private methods region    ///////////////////////////////////////////////////////////////////////
         private async Task<bool> PayMeReward()
         {
             decimal reward = Reward.Get(_blockchain.Blocks != null ? _blockchain.Blocks.Count : 0);
@@ -78,18 +95,6 @@ namespace Services.Blockchains
             transaction.Signature = _signTransactionServ.GetSignature();
             return await _transactionServ.Add(transaction);
         }
-        public Blockchain Get()
-        {
-            return _blockchain;
-        }
-        public bool ReceiveNew(Blockchain blockchain)
-        {
-            bool response1 = ValidateBlockchain.IsValid(blockchain);
-            if (!response1) return false;
-            bool response2 = CompareTwo.IsBetter(blockchain, _blockchain);
-            if (!response2) return false;
-            _blockchain = blockchain;
-            return true;
-        }
+        #endregion
     }
 }

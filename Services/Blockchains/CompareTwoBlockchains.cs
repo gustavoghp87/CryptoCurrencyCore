@@ -2,7 +2,7 @@ using Models;
 
 namespace Services.Blockchains
 {
-    public static class CompareTwo
+    public static class CompareTwoBlockchains
     {
         public static bool IsBetter(Blockchain blockchain1, Blockchain blockchain2)
         {

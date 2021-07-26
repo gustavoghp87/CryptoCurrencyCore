@@ -14,13 +14,17 @@ namespace Services.Nodes
 {
     public class NodeService : INodeService
     {
-        private List<Node> _lstNodes;
+        private readonly List<Node> _lstNodes;
+        private string _myIp;
         public NodeService()
         {
             _lstNodes = new();
+        }
+        public void Initialize(string apiUrl)
+        {
+            _myIp = apiUrl;
             UpdateList();
         }
-        
         public Blockchain GetLongestBlockchain()
         {
             Blockchain blockchain = new();
@@ -43,7 +47,7 @@ namespace Services.Nodes
             foreach (Node node in _lstNodes)
             {
                 var httpContent = new StringContent("", Encoding.UTF8, "application/json");
-                var response = await new HttpClient().PostAsJsonAsync(node.Address + "/api/node", httpContent);
+                var response = await new HttpClient().PostAsJsonAsync(node.Address + "api/node", httpContent);
                 if (response.IsSuccessStatusCode) counter++;
             }
             Console.WriteLine("Registered in " + counter + " servers");
@@ -72,10 +76,11 @@ namespace Services.Nodes
             if (_lstNodes == null) return;
             _lstNodes.ForEach(node =>
             {
-                new HttpClient().PostAsJsonAsync(node.Address.ToString() + "/api/blockchain", newBlockchain);
+                new HttpClient().PostAsJsonAsync(node.Address + "api/blockchain", newBlockchain);
             });
         }
-        
+
+        #region private methods region
         private void UpdateList()
         {
             GetFromBaseServers();
@@ -93,12 +98,14 @@ namespace Services.Nodes
         }
         private void GetFromOne(Node node)
         {
+            Console.WriteLine("1a " + node.Address);
+            if (new Uri(_myIp) == node.Address) return;
+            Console.WriteLine("1b");
             try
             {
                 var request = (HttpWebRequest)WebRequest.Create(node.Address + "api/node");
                 var response = (HttpWebResponse)request.GetResponse();
                 if (response.StatusCode != HttpStatusCode.OK) return;
-                Console.WriteLine(response);
                 string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
                 var lstNodes = JsonConvert.DeserializeObject<List<Node>>(json);
                 AddMany(lstNodes);
@@ -111,7 +118,7 @@ namespace Services.Nodes
                 if (!_lstNodes.Contains(node)) _lstNodes.Add(node);
             });
         }
-        private bool CheckNew(Node newNode)
+        private static bool CheckNew(Node newNode)
         {
             try
             {
@@ -125,5 +132,6 @@ namespace Services.Nodes
                 return false;
             }
         }
+        #endregion
     }
 }

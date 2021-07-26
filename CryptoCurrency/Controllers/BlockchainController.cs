@@ -19,6 +19,7 @@ namespace CryptoCurrency.Controllers
         public BlockchainController(IBlockchainService blockchainService)
         {
             _blockchainServ = blockchainService;
+            _blockchainServ.Initialize(Program.AppUrl);
             _blockchain = _blockchainServ.Get();
         }
 

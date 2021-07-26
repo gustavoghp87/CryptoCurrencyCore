@@ -24,7 +24,7 @@ namespace Services.Nodes
             return _largestBlockchain;
         }
 
-        // private methods
+        #region private methods region    ///////////////////////////////////////////////////////////////////////
         private static void GetAllFromNet()
         {
             if (_lstNodes.Count == 0) Console.WriteLine("There is no node");
@@ -61,5 +61,6 @@ namespace Services.Nodes
                     }
             }
         }
+        #endregion
     }
 }
