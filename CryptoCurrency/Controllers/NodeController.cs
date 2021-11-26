@@ -34,8 +34,9 @@ namespace CryptoCurrency.Controllers
             if (url + "/" == Program.AppUrl) return Ok();
             if (!url.StartsWith("https://") && !url.StartsWith("http://")) return BadRequest();
             CleanUrl.Clean(ref url);
-            Node newNode = new();
-            newNode.Address = new Uri(url);
+            Node newNode = new() {
+                Address = new Uri(url)
+            };
             _nodeService.RegisterOne(newNode);
             return Ok(newNode);
         }

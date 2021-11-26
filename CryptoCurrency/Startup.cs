@@ -6,9 +6,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using Services.Blockchains;
-using Services.Transactions;
 using Services.Interfaces;
 using Services.Nodes;
+using Services.Transactions;
 
 namespace CryptoCurrency
 {

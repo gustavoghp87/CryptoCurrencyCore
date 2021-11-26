@@ -11,14 +11,11 @@ namespace Services.Nodes
     {
         public static List<Node> Get()
         {
-            List<Node> lstInitialServers = new();
-                Node node1 = new() { Address = new Uri("https://localhost:5001") };
-                Node node2 = new() { Address = new Uri("https://localhost:5002") };
-                Node node3 = new() { Address = new Uri("https://localhost:5003") };
-                lstInitialServers.Add(node1);
-                lstInitialServers.Add(node2);
-                lstInitialServers.Add(node3);
-            return lstInitialServers;
+            return new List<Node>() {
+                new Node() { Address = new Uri("https://localhost:5001") },
+                new Node() { Address = new Uri("https://localhost:5002") },
+                new Node() { Address = new Uri("https://localhost:5003") }
+            };
         }
         //public static bool Connect(string nodeId)
         //{

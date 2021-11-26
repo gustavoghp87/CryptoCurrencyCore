@@ -1,10 +1,10 @@
-using Models;
-using Services.Interfaces;
+using CryptoCurrency.Controllers.Interfaces;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+using Models;
 using Services;
-using CryptoCurrency.Controllers.Interfaces;
+using Services.Interfaces;
+using System.Collections.Generic;
 
 namespace CryptoCurrency.Controllers
 {
@@ -25,7 +25,7 @@ namespace CryptoCurrency.Controllers
             _balanceServ = balanceServ;
         }
 
-        [HttpGet("/")]
+        [HttpGet("/wallet")]
         public IActionResult GetNew()
         {
             Wallet wallet = WalletService.GenerateWallet();
@@ -33,7 +33,7 @@ namespace CryptoCurrency.Controllers
         }
 
         // [HttpGet("balance/{publicKey}")]
-        [HttpPost("/")]
+        [HttpPost("/wallet")]
         public IActionResult GetBalance(string publicKey)
         {
             if (publicKey == "") return BadRequest();

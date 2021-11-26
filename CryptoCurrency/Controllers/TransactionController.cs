@@ -1,11 +1,11 @@
+using CryptoCurrency.Controllers.Interfaces;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using Models;
 using Services.Interfaces;
 using Services.Transactions;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CryptoCurrency.Controllers.Interfaces;
 
 namespace CryptoCurrency.Controllers
 {
