@@ -80,7 +80,7 @@ namespace Services.Blockchains
         #region private methods region    ///////////////////////////////////////////////////////////////////////
         private async Task<bool> PayMeReward()
         {
-            decimal reward = Reward.Get(_blockchain.Blocks != null ? _blockchain.Blocks.Count : 0);
+            decimal reward = Reward.Get(_blockchain.Blocks != null ? _blockchain.Blocks.Count + 1 : 0);
             _blockchain.LastReward = reward;
             Transaction transaction = new()
             {

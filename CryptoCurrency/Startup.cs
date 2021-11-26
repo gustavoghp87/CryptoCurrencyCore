@@ -60,8 +60,8 @@ namespace CryptoCurrency
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CryptoCurrency v1"));
             }
             app.UseHttpsRedirection();
-            app.UseCors(MyCors);
             app.UseRouting();
+            app.UseCors(MyCors);
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
