@@ -6,17 +6,17 @@ EXPOSE 5000
 EXPOSE 5001
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
-WORKDIR /src
+WORKDIR /app
+COPY *.sln .
 COPY ["CryptoCurrency/CryptoCurrency.csproj", "CryptoCurrency/"]
 COPY ["Models/Models.csproj", "Models/"]
 COPY ["Services/Services.csproj", "Services/"]
-RUN dotnet restore "CryptoCurrency/CryptoCurrency.csproj"
+RUN dotnet restore
 COPY . .
-WORKDIR "/src/CryptoCurrency"
-RUN dotnet build "CryptoCurrency.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "CryptoCurrency.csproj" -c Release -o /app/publish
+WORKDIR "/app"
+RUN dotnet publish -c Release -o out
 
 FROM base AS final
 WORKDIR /app
