@@ -1,9 +1,9 @@
 using CryptoCurrency.Controllers.Interfaces;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using Models;
 using Services.Blockchains;
 using Services.Interfaces;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
 namespace CryptoCurrency.Controllers
@@ -41,7 +41,7 @@ namespace CryptoCurrency.Controllers
         public async Task<IActionResult> Mine()
         {
             bool response = await _blockchainServ.Mine();
-            if (!response) return BadRequest();
+            if (!response) return StatusCode(500);
             Blockchain blockchain = _blockchainServ.Get();
             return Ok(blockchain);
         }
@@ -50,7 +50,7 @@ namespace CryptoCurrency.Controllers
         public IActionResult Validate()
         {
             _blockchain = _blockchainServ.Get();
-            bool response = ValidateBlockchain.IsValid(_blockchain);
+            bool response = BlockchainValidation.IsValid(_blockchain);
             return Ok(response);
         }
     }

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Services.Blockchains
 {
-    public static class ValidateBlockchain
+    public static class BlockchainValidation
     {
         public static bool IsValid(Blockchain blockchain)
         {

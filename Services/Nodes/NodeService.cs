@@ -80,7 +80,7 @@ namespace Services.Nodes
             });
         }
 
-        #region private methods region
+        #region private methods region    ///////////////////////////////////////////////////////////////////////
         private void UpdateList()
         {
             GetFromBaseServers();

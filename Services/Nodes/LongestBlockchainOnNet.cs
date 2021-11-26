@@ -52,10 +52,10 @@ namespace Services.Nodes
                 if (blockchain.Blocks != null)
                     if (_largestBlockchain.Blocks != null)
                     {
-                        if (blockchain.Blocks.Count > _largestBlockchain.Blocks.Count && ValidateBlockchain.IsValid(blockchain))
+                        if (blockchain.Blocks.Count > _largestBlockchain.Blocks.Count && BlockchainValidation.IsValid(blockchain))
                             _largestBlockchain = blockchain;
                     }
-                    else if (ValidateBlockchain.IsValid(blockchain))
+                    else if (BlockchainValidation.IsValid(blockchain))
                     {
                         _largestBlockchain = blockchain;
                     }

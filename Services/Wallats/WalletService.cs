@@ -6,7 +6,7 @@ namespace Services
 {
     public static class WalletService
     {
-        public static Wallet Generate()
+        public static Wallet GenerateWallet()
         {
             Wallet newWallet = new();
             var bitcoinKey = new Key().GetBitcoinSecret(Network.Main);

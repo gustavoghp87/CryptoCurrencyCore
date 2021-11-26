@@ -55,9 +55,9 @@ namespace Services.Blockchains
             .GetMined();
 
             if (newBlock == null) return false;
-            newBlock.DifficultyT = HashScore.Get(newBlock.Hash);
+            newBlock.DifficultyScore = HashScore.Get(newBlock.Hash);
             _blockchain.Blocks.Add(newBlock);
-            _blockchain.LastDifficulty = newBlock.DifficultyT;
+            _blockchain.LastDifficulty = newBlock.DifficultyScore;
             _blockchain.Nodes = _nodeService.GetAll();            // TODO: add my ip
             _nodeService.SendNewBlockchain(_blockchain);
             _transactionServ.Clear();
@@ -69,7 +69,7 @@ namespace Services.Blockchains
         }
         public bool ReceiveNew(Blockchain blockchain)
         {
-            bool response1 = ValidateBlockchain.IsValid(blockchain);
+            bool response1 = BlockchainValidation.IsValid(blockchain);
             if (!response1) return false;
             bool response2 = CompareTwoBlockchains.IsBetter(blockchain, _blockchain);
             if (!response2) return false;

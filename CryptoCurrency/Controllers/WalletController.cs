@@ -28,7 +28,7 @@ namespace CryptoCurrency.Controllers
         [HttpGet("/")]
         public IActionResult GetNew()
         {
-            Wallet wallet = WalletService.Generate();
+            Wallet wallet = WalletService.GenerateWallet();
             return Ok(wallet);
         }
 

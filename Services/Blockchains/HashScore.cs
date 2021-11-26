@@ -23,6 +23,8 @@ namespace Services.Blockchains
             string text = GetRestInText(zeros, rest);
             return text.ToString();
         }
+
+        // private methods:
         private static BigInteger GetScore(string hash)
         {
             if (hash.Length != _hashLength) return 0;
