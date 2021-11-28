@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Models;
 using Services.Blockchains;
 using Services.Interfaces;
+using System;
 using System.Threading.Tasks;
 
 namespace CryptoCurrency.Controllers
@@ -19,7 +20,7 @@ namespace CryptoCurrency.Controllers
         public BlockchainController(IBlockchainService blockchainService)
         {
             _blockchainServ = blockchainService;
-            _blockchainServ.Initialize(Program.AppUrl);
+            _blockchainServ.Initialize();
             _blockchain = _blockchainServ.Get();
         }
 
@@ -27,6 +28,7 @@ namespace CryptoCurrency.Controllers
         public IActionResult Get()
         {
             _blockchain = _blockchainServ.Get();
+            Console.WriteLine("Getting blockchain -.-.-.----.");
             return Ok(_blockchain);
         }
 
@@ -37,7 +39,7 @@ namespace CryptoCurrency.Controllers
             return Ok(response);
         }
 
-        [HttpGet("/mine")]
+        [HttpGet("mine")]
         public async Task<IActionResult> Mine()
         {
             bool response = await _blockchainServ.Mine();
@@ -46,7 +48,7 @@ namespace CryptoCurrency.Controllers
             return Ok(blockchain);
         }
 
-        [HttpGet("/validation")]
+        [HttpGet("validation")]
         public IActionResult Validate()
         {
             _blockchain = _blockchainServ.Get();

@@ -31,7 +31,7 @@ namespace CryptoCurrency.Controllers
         {
             string url = Request.Headers["Referer"].ToString();
             Console.WriteLine("URL: ***************************************: " + url);
-            if (url + "/" == Program.AppUrl) return Ok();
+            //if (url + "/" == Program.AppUrl) return Ok();
             if (!url.StartsWith("https://") && !url.StartsWith("http://")) return BadRequest();
             CleanUrl.Clean(ref url);
             Node newNode = new() {

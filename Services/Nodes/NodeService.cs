@@ -15,14 +15,14 @@ namespace Services.Nodes
     public class NodeService : INodeService
     {
         private readonly List<Node> _lstNodes;
-        private string _myIp;
+        private string _myIp = "http://localhost:5";
         public NodeService()
         {
             _lstNodes = new();
         }
-        public void Initialize(string apiUrl)
+        public void Initialize()
         {
-            _myIp = apiUrl;
+            //_myIp = apiUrl;
             UpdateList();
         }
         public Blockchain GetLongestBlockchain()

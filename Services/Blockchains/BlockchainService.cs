@@ -24,9 +24,9 @@ namespace Services.Blockchains
             _blockchain.IssuerWallet = Issuer.IssuerWallet;
             _signTransactionServ = signTransactionService;
         }
-        public async void Initialize(string myIp)
+        public async void Initialize()
         {
-            _nodeService.Initialize(myIp);
+            _nodeService.Initialize();
             _blockchain.Nodes = _nodeService.GetAll();
             _ = _nodeService.RegisterMe();
             Blockchain largestBC = _nodeService.GetLongestBlockchain();
