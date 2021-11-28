@@ -15,15 +15,10 @@ namespace CryptoCurrency.Controllers
     [Produces("application/json")]
     public class TransactionController : ControllerBase, ITransactionController
     {
-        private Blockchain _blockchain;
-        private IBlockchainService _blockchainServ;
-        private ITransactionService _transactionService;
-        private ISignTransactionService _signTransactionService;
-        public TransactionController(IBlockchainService blockchainService, ITransactionService transactionService,
-            SignTransactionService signTransactionService)
+        private static ITransactionService _transactionService;
+        private static ISignTransactionService _signTransactionService;
+        public TransactionController(ITransactionService transactionService, SignTransactionService signTransactionService)
         {
-            _blockchainServ = blockchainService;
-            _blockchain = _blockchainServ.Get();
             _transactionService = transactionService;
             _signTransactionService = signTransactionService;
         }

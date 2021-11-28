@@ -15,13 +15,12 @@ namespace CryptoCurrency.Controllers
     [Produces("application/json")]
     public class BlockchainController : ControllerBase, IBlockchainController
     {
-        private Blockchain _blockchain;
+        private static Blockchain _blockchain;
         private readonly IBlockchainService _blockchainServ;
         public BlockchainController(IBlockchainService blockchainService)
         {
-            _blockchainServ = blockchainService;
-            _blockchainServ.Initialize();
-            _blockchain = _blockchainServ.Get();
+            if (_blockchainServ == null) _blockchainServ = blockchainService;
+            if (_blockchain == null || _blockchain.Blocks == null || _blockchain.Blocks.Count == 0) _blockchainServ.Initialize();
         }
 
         [HttpGet]

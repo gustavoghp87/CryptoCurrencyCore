@@ -1,3 +1,4 @@
+using Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -42,12 +43,18 @@ namespace CryptoCurrency
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
-            services.AddSingleton<IBlockchainService, BlockchainService>();
-            services.AddSingleton<ITransactionService, TransactionService>();
-            services.AddSingleton<INodeService, NodeService>();
-            services.AddTransient<IBalanceService, BalanceService>();
-            services.AddTransient<ISignTransactionService, SignTransactionService>();
+            services.AddOptions();
+            //services.AddSingleton<IBlockchainService, BlockchainService>();
+            //services.AddSingleton<ITransactionService, TransactionService>();
+            //services.AddSingleton<INodeService, NodeService>();
+            //services.AddTransient<IBalanceService, BalanceService>();
+            //services.AddTransient<ISignTransactionService, SignTransactionService>();
             services.AddHostedService<MineHostedService>();
+        }
+
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.RegisterModule(new ProgramModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

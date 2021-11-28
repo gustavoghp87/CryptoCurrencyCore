@@ -14,7 +14,7 @@ namespace CryptoCurrency.Controllers
     [Produces("application/json")]
     public class NodeController : ControllerBase, INodeController
     {
-        private readonly INodeService _nodeService;
+        private static INodeService _nodeService;
         public NodeController(INodeService nodeService)
         {
             _nodeService = nodeService;

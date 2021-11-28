@@ -9,14 +9,14 @@ using System.Collections.Generic;
 namespace CryptoCurrency.Controllers
 {
     [ApiController]
-    [Route("api/")]
+    [Route("api/[controller]")]
     [EnableCors("MyCors")]
     [Produces("application/json")]
     public class WalletController : ControllerBase, IWalletController
     {  
-        private IBlockchainService _blockchainServ;
-        private ITransactionService _transactionService;
-        private IBalanceService _balanceServ;
+        private static IBlockchainService _blockchainServ;
+        private static ITransactionService _transactionService;
+        private static IBalanceService _balanceServ;
         public WalletController(IBlockchainService blockchainService, ITransactionService transactionService,
             IBalanceService balanceServ)
         {
@@ -25,7 +25,7 @@ namespace CryptoCurrency.Controllers
             _balanceServ = balanceServ;
         }
 
-        [HttpGet("/wallet")]
+        [HttpGet]
         public IActionResult GetNew()
         {
             Wallet wallet = WalletService.GenerateWallet();
@@ -33,7 +33,7 @@ namespace CryptoCurrency.Controllers
         }
 
         // [HttpGet("balance/{publicKey}")]
-        [HttpPost("/wallet")]
+        [HttpPost]
         public IActionResult GetBalance(string publicKey)
         {
             if (publicKey == "") return BadRequest();
