@@ -9,7 +9,7 @@ namespace Services.Blockchains
         public static bool IsValid(Blockchain blockchain)
         {
             if (blockchain == null || blockchain.Blocks == null || blockchain.Blocks.Count == 0) return false;
-            if (blockchain.IssuerWallet.PublicKey != Issuer.IssuerWallet.PublicKey) return false;
+            if (blockchain.IssuerWallet.PublicKey != Issuer.Wallet.PublicKey) return false;
             Block block1 = blockchain.Blocks.ElementAt(0);
             if (block1.PreviousHash != "null!") return false;
             if (!ValidateBlock.IsValid(block1)) return false;
@@ -25,7 +25,7 @@ namespace Services.Blockchains
                 if (block.Transactions == null || block.Transactions.Count == 0) return false;
                 foreach(Transaction transaction in block.Transactions)
                 {
-                    if (transaction.Sender == Issuer.IssuerWallet.PublicKey)
+                    if (transaction.Sender == Issuer.Wallet.PublicKey)
                     {
                         if (transaction.Amount != 0 && transaction.Fees != Reward.Get(i)) return false;
                         issuerCounter++;

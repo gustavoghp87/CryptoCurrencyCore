@@ -1,6 +1,7 @@
 using Models;
-using Services.Interfaces;
 using Newtonsoft.Json;
+using Services.Blockchains;
+using Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,14 +16,11 @@ namespace Services.Nodes
     public class NodeService : INodeService
     {
         private readonly List<Node> _lstNodes;
-        private string _myIp = "http://localhost:5";
+        private readonly string _myIp = "http://localhost:5";
         public NodeService()
         {
-            _lstNodes = new();
-        }
-        public void Initialize()
-        {
             //_myIp = apiUrl;
+            _lstNodes = new();
             UpdateList();
         }
         public Blockchain GetLongestBlockchain()
@@ -33,7 +31,6 @@ namespace Services.Nodes
                 blockchain = LongestBlockchainOnNet.Get(_lstNodes);
                 if (blockchain != null && blockchain.Nodes != null) AddMany(blockchain.Nodes);
             }
-            // compare this one with mine's
             return blockchain;
         }
         public List<Node> GetAll()
@@ -92,13 +89,14 @@ namespace Services.Nodes
         private void GetFromBaseServers()
         {
             List<Node> lstCentralServers = ScaffoldServers.Get();
+            if (lstCentralServers == null) return;
             lstCentralServers.ForEach(centralServer => {
                 GetFromOne(centralServer);
             });
         }
         private void GetFromOne(Node node)
         {
-            Console.WriteLine("1a " + node.Address);
+            Console.WriteLine("Looking for blockchain from " + node.Address);
             if (new Uri(_myIp) == node.Address) return;
             Console.WriteLine("1b");
             try

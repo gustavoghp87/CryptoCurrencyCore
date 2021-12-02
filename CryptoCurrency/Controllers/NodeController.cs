@@ -5,6 +5,8 @@ using Models;
 using Services.Interfaces;
 using Services.Nodes;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace CryptoCurrency.Controllers
 {
@@ -29,6 +31,14 @@ namespace CryptoCurrency.Controllers
         [HttpPost("node")]
         public IActionResult AddNode()
         {
+            var hashtable = new Hashtable
+            {
+                { "node", "https://hashes.com/" }
+            };
+            var dictionary = new Dictionary<string, Node>
+            {
+                { "node", new Node() }
+            };
             string url = Request.Headers["Referer"].ToString();
             Console.WriteLine("URL: ***************************************: " + url);
             //if (url + "/" == Program.AppUrl) return Ok();

@@ -31,6 +31,11 @@ namespace Services.Nodes
             else
                 foreach (Node node in _lstNodes)
                 {
+                    if (node.Address.ToString() == BlockchainService.DomainName)
+                    {
+                        Console.WriteLine("EQUALS                                  *************************************** ");
+                        continue;
+                    }
                     try
                     {
                         var url = new Uri(node.Address + "api/blockchain");

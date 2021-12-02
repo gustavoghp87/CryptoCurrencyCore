@@ -10,25 +10,22 @@ namespace Services.Blockchains
     public partial class BlockchainService : IBlockchainService
     {
         private Blockchain _blockchain;
-        private readonly Wallet _minerWallet;
         private readonly INodeService _nodeService;
         private readonly ITransactionService _transactionServ;
         private readonly ISignTransactionService _signTransactionServ;
+        private readonly Wallet _minerWallet;
+        public static string DomainName { get; set; }
         public BlockchainService(INodeService nodeService, ITransactionService transactionServ,
             ISignTransactionService signTransactionService)
         {
             _blockchain = new();
+            _blockchain.IssuerWallet = Issuer.Wallet;
             _minerWallet = Miner.MinerWallet;
             _nodeService = nodeService;
-            _transactionServ = transactionServ;
-            _blockchain.IssuerWallet = Issuer.IssuerWallet;
-            _signTransactionServ = signTransactionService;
-        }
-        public async void Initialize()
-        {
-            _nodeService.Initialize();
+            _nodeService.RegisterMe();
             _blockchain.Nodes = _nodeService.GetAll();
-            _ = _nodeService.RegisterMe();
+            _transactionServ = transactionServ;
+            _signTransactionServ = signTransactionService;
             Blockchain largestBC = _nodeService.GetLongestBlockchain();
             if (largestBC != null && largestBC.Blocks != null && largestBC.Blocks.Count != 0)
             {
@@ -36,9 +33,9 @@ namespace Services.Blockchains
             }
             else
             {
-                Console.WriteLine("#######################  Building new blockchain  #######################");
+                Console.WriteLine("#######################  Building new blockchain  ####################### Running on " + DomainName);
                 _blockchain.Blocks = new();
-                await Mine();
+                Mine();
             }
         }
         public async Task<bool> Mine()
@@ -56,6 +53,7 @@ namespace Services.Blockchains
 
             if (newBlock == null) return false;
             newBlock.DifficultyScore = HashScore.Get(newBlock.Hash);
+            if (_blockchain.Blocks == null) return false;
             _blockchain.Blocks.Add(newBlock);
             _blockchain.LastDifficulty = newBlock.DifficultyScore;
             _blockchain.Nodes = _nodeService.GetAll();            // TODO: add my ip
@@ -80,7 +78,7 @@ namespace Services.Blockchains
         #region private methods region    ///////////////////////////////////////////////////////////////////////
         private async Task<bool> PayMeReward()
         {
-            decimal reward = Reward.Get(_blockchain.Blocks != null ? _blockchain.Blocks.Count + 1 : 0);
+            decimal reward = Reward.Get(_blockchain.Blocks != null ? _blockchain.Blocks.Count + 1 : 1);
             _blockchain.LastReward = reward;
             Transaction transaction = new()
             {

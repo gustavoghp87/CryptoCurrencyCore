@@ -1,16 +1,12 @@
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Services.Blockchains;
-using Services.Interfaces;
-using Services.Nodes;
-using Services.Transactions;
 
 namespace CryptoCurrency
 {
     public class Program
     {
-        //internal static readonly string AppUrl = "http://localhost:5001";
+        public static readonly string DomainName = System.Environment.UserDomainName;
 
         public static void Main(string[] args)
         {

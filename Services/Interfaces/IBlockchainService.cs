@@ -7,7 +7,6 @@ namespace Services.Interfaces
     {
         Blockchain Get();
         //void Initialize(string myIp);
-        void Initialize();
         Task<bool> Mine();
         bool ReceiveNew(Blockchain blockchain);
     }

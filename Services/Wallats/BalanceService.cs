@@ -35,7 +35,7 @@ namespace Services.Blockchains
         {
             List<Transaction> lstTransactions = GetTransactionsByAddress();
             decimal balance = 0;
-            string issuerAddress = Issuer.IssuerWallet.PublicKey;
+            string issuerAddress = Issuer.Wallet.PublicKey;
             foreach (Transaction aTransaction in lstTransactions)
             {
                 if (_senderPublicKey == aTransaction.Recipient)

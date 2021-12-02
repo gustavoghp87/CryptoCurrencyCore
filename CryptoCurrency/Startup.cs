@@ -7,9 +7,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using Services.Blockchains;
-using Services.Interfaces;
-using Services.Nodes;
-using Services.Transactions;
 
 namespace CryptoCurrency
 {
@@ -23,7 +20,6 @@ namespace CryptoCurrency
             Configuration = configuration;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -43,7 +39,6 @@ namespace CryptoCurrency
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
-            services.AddOptions();
             //services.AddSingleton<IBlockchainService, BlockchainService>();
             //services.AddSingleton<ITransactionService, TransactionService>();
             //services.AddSingleton<INodeService, NodeService>();
@@ -57,15 +52,14 @@ namespace CryptoCurrency
             builder.RegisterModule(new ProgramModule());
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //if (env.IsDevelopment())
-            //{
+            if (env.IsDevelopment())
+            {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CryptoCurrency v1"));
-            //}
+            }
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCors(MyCors);

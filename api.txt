@@ -1,0 +1,15 @@
+-give me your blockchain
+-receive my blockchain and process
+-give me your nodes
+-receive my node
+-give me your current transactions
+-receive my transaction
+-give me a new wallet
+-give me the balance of my wallet
+
+
+-mine...
+-check the validity of your blockchain...
+-sign my transaction...
+
+-send random transaction ?

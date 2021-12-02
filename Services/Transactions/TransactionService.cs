@@ -30,7 +30,7 @@ namespace Services.Transactions
             if (!IsTimeValidated(transaction.Timestamp)) return false;
             if (transactionReq.Amount < 0 || transaction.Fees < 0) return false;
             if (transactionReq.Amount == 0 && transaction.Fees == 0) return false;
-            if (transactionReq.Sender == Issuer.IssuerWallet.PublicKey && transactionReq.Amount > 0) return false;
+            if (transactionReq.Sender == Issuer.Wallet.PublicKey && transactionReq.Amount > 0) return false;
             if (!IsVerified(transaction)) return false;
             bool success = await Create(transaction);
             // SendToNodes();
@@ -79,7 +79,7 @@ namespace Services.Transactions
         }
         private async Task<bool> HasBalance(Transaction transaction)
         {
-            if (transaction.Sender == Issuer.IssuerWallet.PublicKey) return true;    // limite this to issues
+            if (transaction.Sender == Issuer.Wallet.PublicKey) return true;    // limite this to issues
 
             // TODO: signature was used before ?
             int auxiliar = 0;
