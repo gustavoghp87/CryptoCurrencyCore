@@ -13,7 +13,7 @@ namespace Services.Nodes
         {
             return new List<Node>() {
                 new Node() { Address = new Uri("https://mysterious-thicket-34741.herokuapp.com/") },
-                new Node() { Address = new Uri("https://localhost:5002") },
+                new Node() { Address = new Uri("https://localhost:5001") },
                 new Node() { Address = new Uri("https://localhost:5003") }
             };
         }

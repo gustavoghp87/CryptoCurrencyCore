@@ -11,6 +11,7 @@ namespace Services.Blockchains
         private ST.Timer _timer;
         public Task StartAsync(ST.CancellationToken cancellationToken)
         {
+            Console.WriteLine("Initializing Mine Hosted Service");
             long unixTimeSeconds = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
             //Console.WriteLine(unixTimeSeconds);
             int timeLeft = 60 - (int)unixTimeSeconds%60;

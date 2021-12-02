@@ -9,12 +9,12 @@ namespace Services.Blockchains
 {
     public partial class BlockchainService : IBlockchainService
     {
+        public static string DomainName { get; set; }
         private Blockchain _blockchain;
         private readonly INodeService _nodeService;
         private readonly ITransactionService _transactionServ;
         private readonly ISignTransactionService _signTransactionServ;
         private readonly Wallet _minerWallet;
-        public static string DomainName { get; set; }
         public BlockchainService(INodeService nodeService, ITransactionService transactionServ,
             ISignTransactionService signTransactionService)
         {
@@ -22,7 +22,7 @@ namespace Services.Blockchains
             _blockchain.IssuerWallet = Issuer.Wallet;
             _minerWallet = Miner.MinerWallet;
             _nodeService = nodeService;
-            _nodeService.RegisterMe();
+            // _nodeService.RegisterMe();
             _blockchain.Nodes = _nodeService.GetAll();
             _transactionServ = transactionServ;
             _signTransactionServ = signTransactionService;

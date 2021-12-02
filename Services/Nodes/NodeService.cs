@@ -16,10 +16,8 @@ namespace Services.Nodes
     public class NodeService : INodeService
     {
         private readonly List<Node> _lstNodes;
-        private readonly string _myIp = "http://localhost:5";
         public NodeService()
         {
-            //_myIp = apiUrl;
             _lstNodes = new();
             UpdateList();
         }
@@ -29,7 +27,12 @@ namespace Services.Nodes
             if (_lstNodes != null && _lstNodes.Count != 0)
             {
                 blockchain = LongestBlockchainOnNet.Get(_lstNodes);
-                if (blockchain != null && blockchain.Nodes != null) AddMany(blockchain.Nodes);
+                if (blockchain != null && blockchain.Nodes != null)
+                {
+                    blockchain.Nodes.ForEach(node => {
+                        RegisterOne(node);
+                    });
+                }
             }
             return blockchain;
         }
@@ -59,13 +62,9 @@ namespace Services.Nodes
         }
         public bool RegisterOne(Node node)
         {
-            bool exists = false;
-            _lstNodes.ForEach(nodeX => { if (nodeX.Address == node.Address) exists = true; } );
-            if (!exists)
-            {
-                _lstNodes.Add(node);
-                GetFromOne(node);
-            }
+            if (_lstNodes != null) return false;
+            if (!_lstNodes.Contains(node)) _lstNodes.Add(node);
+            GetFromOne(node);
             return CheckNew(node);
         }
         public void SendNewBlockchain(Blockchain newBlockchain)
@@ -80,25 +79,30 @@ namespace Services.Nodes
         #region private methods region    ///////////////////////////////////////////////////////////////////////
         private void UpdateList()
         {
-            GetFromBaseServers();
+            GetFromScaffoldServers();
             _lstNodes.ForEach(node => {
                 Console.WriteLine("Connected Node: " + node.Address);
             });
             // TODO: get request alive man
         }
-        private void GetFromBaseServers()
+        private void GetFromScaffoldServers()
         {
-            List<Node> lstCentralServers = ScaffoldServers.Get();
-            if (lstCentralServers == null) return;
-            lstCentralServers.ForEach(centralServer => {
-                GetFromOne(centralServer);
+            List<Node> scaffoldServersList = ScaffoldServers.Get();
+            if (scaffoldServersList == null) return;
+            scaffoldServersList.ForEach(scaffoldServer => {
+                if (!_lstNodes.Contains(scaffoldServer)) _lstNodes.Add(scaffoldServer);
+                GetFromOne(scaffoldServer);
             });
         }
         private void GetFromOne(Node node)
         {
-            Console.WriteLine("Looking for blockchain from " + node.Address);
-            if (new Uri(_myIp) == node.Address) return;
-            Console.WriteLine("1b");
+            Console.WriteLine("Looking for nodes from " + node.Address.ToString());
+            Console.WriteLine("My domain name is " + BlockchainService.DomainName);
+            if (node.Address.ToString() == BlockchainService.DomainName)
+            {
+                Console.WriteLine("This is my domain name......... cancelled");
+                return;
+            }
             try
             {
                 var request = (HttpWebRequest)WebRequest.Create(node.Address + "api/node");
@@ -106,22 +110,20 @@ namespace Services.Nodes
                 if (response.StatusCode != HttpStatusCode.OK) return;
                 string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
                 var lstNodes = JsonConvert.DeserializeObject<List<Node>>(json);
-                AddMany(lstNodes);
+                if (lstNodes != null && lstNodes.Count > 0)
+                {
+                    lstNodes.ForEach(node => {
+                        RegisterOne(node);
+                    });
+                }
             } catch (Exception e) { Console.WriteLine(node.Address + "api/node: " + e.Message); }
-        }
-        private void AddMany(List<Node> lstNodes)
-        {
-            if (lstNodes == null || lstNodes.Count == 0) return;
-            lstNodes.ForEach(node => {
-                if (!_lstNodes.Contains(node)) _lstNodes.Add(node);
-            });
         }
         private static bool CheckNew(Node newNode)
         {
             try
             {
                 Console.WriteLine(newNode);
-                // post request
+                // TODO: post request
                 return true;
             }
             catch (Exception e)

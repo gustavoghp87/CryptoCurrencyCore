@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace CryptoCurrency.Controllers
 {
     [ApiController]
-    [Route("api/")]
+    [Route("api/[controller]")]
     [EnableCors("MyCors")]
     [Produces("application/json")]
     public class BlockchainController : ControllerBase, IBlockchainController
@@ -20,11 +20,9 @@ namespace CryptoCurrency.Controllers
         public BlockchainController(IBlockchainService blockchainService)
         {
             _blockchainServ = blockchainService;
-            BlockchainService.DomainName = System.Environment.UserDomainName;
-            Console.WriteLine(System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().DomainName + "    **********************************************");
         }
 
-        [HttpGet("blockchain")]
+        [HttpGet]
         public IActionResult Get()
         {
             _blockchain = _blockchainServ.Get();
@@ -32,14 +30,14 @@ namespace CryptoCurrency.Controllers
             return Ok(_blockchain);
         }
 
-        [HttpPost("blockchain")]
+        [HttpPost]
         public IActionResult ReceiveNew(Blockchain blockchain)
         {
             bool response = _blockchainServ.ReceiveNew(blockchain);
             return Ok(response);
         }
 
-        [HttpGet("blockchain/mine")]
+        [HttpGet("mine")]
         public async Task<IActionResult> Mine()
         {
             bool response = await _blockchainServ.Mine();
@@ -48,7 +46,7 @@ namespace CryptoCurrency.Controllers
             return Ok(blockchain);
         }
 
-        [HttpGet("blockchain/validation")]
+        [HttpGet("validation")]
         public IActionResult Validate()
         {
             _blockchain = _blockchainServ.Get();

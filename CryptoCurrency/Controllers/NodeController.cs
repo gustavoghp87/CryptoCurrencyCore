@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace CryptoCurrency.Controllers
 {
     [ApiController]
-    [Route("api/")]
+    [Route("api/[controller]")]
     [EnableCors("MyCors")]
     [Produces("application/json")]
     public class NodeController : ControllerBase, INodeController
@@ -22,13 +22,13 @@ namespace CryptoCurrency.Controllers
             _nodeService = nodeService;
         }
 
-        [HttpGet("node")]
+        [HttpGet]
         public IActionResult GetNodes()
         {
             return Ok(_nodeService.GetAll());
         }
 
-        [HttpPost("node")]
+        [HttpPost]
         public IActionResult AddNode()
         {
             var hashtable = new Hashtable

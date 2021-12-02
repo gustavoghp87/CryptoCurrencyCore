@@ -19,6 +19,9 @@ RUN dotnet publish -c Release -o out
 
 FROM base AS final
 WORKDIR /app
+
+ENV domainName=https://mysterious-thicket-34741.herokuapp.com/
+
 # ENV ASPNETCORE_URLS=http://+:80
 # ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 # ENV ASPNETCORE_ENVIRONMENT=Development

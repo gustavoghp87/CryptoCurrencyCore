@@ -54,16 +54,16 @@ namespace Services.Nodes
         {
             foreach (Blockchain blockchain in _lstBlockchains)
             {
-                if (blockchain.Blocks != null)
-                    if (_largestBlockchain.Blocks != null)
-                    {
-                        if (blockchain.Blocks.Count > _largestBlockchain.Blocks.Count && BlockchainValidation.IsValid(blockchain))
-                            _largestBlockchain = blockchain;
-                    }
-                    else if (BlockchainValidation.IsValid(blockchain))
-                    {
+                if (blockchain.Blocks == null) return;
+                if (_largestBlockchain.Blocks != null)
+                {
+                    if (blockchain.Blocks.Count > _largestBlockchain.Blocks.Count && BlockchainValidation.IsValid(blockchain))
                         _largestBlockchain = blockchain;
-                    }
+                }
+                else if (BlockchainValidation.IsValid(blockchain))
+                {
+                    _largestBlockchain = blockchain;
+                }
             }
         }
         #endregion

@@ -14,7 +14,7 @@ namespace Services.Blockchains
             if (block1.PreviousHash != "null!") return false;
             if (!ValidateBlock.IsValid(block1)) return false;
             if (blockchain.Blocks.Count == 1) return true;
-            for (int i = 1; i <= blockchain.Blocks.Count; i++)
+            for (int i = 1; i < blockchain.Blocks.Count; i++)
             {
                 Block block = blockchain.Blocks.ElementAt(i);
                 Block lastBlock = blockchain.Blocks.ElementAt(i - 1);

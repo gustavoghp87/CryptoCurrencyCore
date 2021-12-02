@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace CryptoCurrency.Controllers
 {
     [ApiController]
-    [Route("api/")]
+    [Route("api/[controller]")]
     [EnableCors("MyCors")]
     [Produces("application/json")]
     public class TransactionController : ControllerBase, ITransactionController
@@ -23,14 +23,14 @@ namespace CryptoCurrency.Controllers
             _signTransactionService = signTransactionService;
         }
 
-        [HttpGet("transaction")]
+        [HttpGet]
         public IActionResult GetAll()
         {
             List<Transaction> lstTransactions = _transactionService.GetAll();
             return Ok(lstTransactions);
         }
 
-        [HttpPost("transaction")]
+        [HttpPost]
         public async Task<IActionResult> AddTransaction(Transaction transactionRequest)
         {
             bool response = await _transactionService.Add(transactionRequest);
@@ -38,7 +38,7 @@ namespace CryptoCurrency.Controllers
             return Ok(transactionRequest);
         }
 
-        [HttpPost("transaction/signature")]
+        [HttpPost("signature")]
         public IActionResult Sign(Transaction transactionRequest, string privateKey)
         {
             if (privateKey == null | privateKey == "") return BadRequest();
