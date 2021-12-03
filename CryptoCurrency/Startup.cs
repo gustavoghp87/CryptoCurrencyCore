@@ -54,12 +54,12 @@ namespace CryptoCurrency
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
+            //if (env.IsDevelopment())
+            //{
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CryptoCurrency v1"));
-            }
+            //}
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCors(MyCors);

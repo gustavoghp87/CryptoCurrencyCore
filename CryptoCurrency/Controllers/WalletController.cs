@@ -32,13 +32,31 @@ namespace CryptoCurrency.Controllers
             return Ok(wallet);
         }
 
-        // [HttpGet("balance/{publicKey}")]
-        [HttpPost]
+        [HttpGet("{publicKey}")]
+        //[HttpPost]
         public IActionResult GetBalance(string publicKey)
         {
-            if (publicKey == "") return BadRequest();
+            if (string.IsNullOrEmpty(publicKey)) return BadRequest();
             List<Transaction> lstCurrentTransactions = _transactionService.GetAll();
             _balanceServ.Initialize(publicKey, lstCurrentTransactions, _blockchainServ.Get());
+            decimal balance = _balanceServ.Get();
+            return Ok(balance);
+        }
+
+        [HttpGet("miner")]
+        public IActionResult GetMinerBalance()
+        {
+            List<Transaction> lstCurrentTransactions = _transactionService.GetAll();
+            _balanceServ.Initialize(Miner.MinerWallet.PublicKey, lstCurrentTransactions, _blockchainServ.Get());
+            decimal balance = _balanceServ.Get();
+            return Ok(balance);
+        }
+
+        [HttpGet("issuer")]
+        public IActionResult GetIssuerBalance()
+        {
+            List<Transaction> lstCurrentTransactions = _transactionService.GetAll();
+            _balanceServ.Initialize(Issuer.Wallet.PublicKey, lstCurrentTransactions, _blockchainServ.Get());
             decimal balance = _balanceServ.Get();
             return Ok(balance);
         }

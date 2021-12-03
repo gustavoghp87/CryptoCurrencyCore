@@ -1,6 +1,4 @@
-using Models;
-
-namespace Services
+namespace Models
 {
     public static class Issuer
     {
