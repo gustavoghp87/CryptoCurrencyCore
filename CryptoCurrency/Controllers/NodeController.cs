@@ -41,14 +41,15 @@ namespace CryptoCurrency.Controllers
             };
             string url = Request.Headers["Referer"].ToString();
             Console.WriteLine("URL: ***************************************: " + url);
-            //if (url + "/" == Program.AppUrl) return Ok();
+            if (url + "/" == Program.DomainName) return Ok();
             if (!url.StartsWith("https://") && !url.StartsWith("http://")) return BadRequest();
             CleanUrl.Clean(ref url);
             Node newNode = new() {
                 Address = new Uri(url)
             };
-            _nodeService.RegisterOne(newNode);
-            return Ok(newNode);
+            bool response = _nodeService.RegisterOne(newNode);
+            if (!response) return StatusCode(500);
+            return Ok("Done: " + newNode);
         }
     }
 }
