@@ -21,12 +21,16 @@ FROM base AS final
 WORKDIR /app
 
 # ENV domainName=https://mysterious-thicket-34741.herokuapp.com/
-ENV domainName=https://limitless-sands-00250.herokuapp.com/
+# ENV domainName=https://limitless-sands-00250.herokuapp.com/
+ENV domainName=http://190.231.194.136
 
 # ENV ASPNETCORE_URLS=http://+:80
 # ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 # ENV ASPNETCORE_ENVIRONMENT=Development
 # EXPOSE 80
+
 COPY --from=publish /app/out .
+
 # ENTRYPOINT ["dotnet", "CryptoCurrency.dll"]
-CMD ASPNETCORE_URLS=http://*:$PORT dotnet CryptoCurrency.dll
+# CMD ASPNETCORE_URLS=http://*:$PORT dotnet CryptoCurrency.dll
+CMD ASPNETCORE_URLS=http://*:8080 dotnet CryptoCurrency.dll

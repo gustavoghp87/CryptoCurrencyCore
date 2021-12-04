@@ -4,11 +4,11 @@ home=$(pwd)
 printf "*** pulling... *** "
 git pull;
 printf "*** stopping... *** "
-docker stop ***;
+docker stop crypto-ps;
 printf "*** removing... *** "
-docker rm -f ***;         (image)
+docker rmi -f crypto-image;
 printf "*** building... *** "
-docker build -t *** .;
+docker build -t crypto-image .;
 printf "*** starting... *** "
-docker run --name ***;
+docker run -p 8080:80 -d --name crypto-ps crypto-image;
 printf "*** done *** "
