@@ -67,10 +67,10 @@ namespace Services.Blockchains
         }
         public bool ReceiveNew(Blockchain blockchain)
         {
-            bool response1 = BlockchainValidation.IsValid(blockchain);
-            if (!response1) return false;
-            bool response2 = CompareTwoBlockchains.IsBetter(blockchain, _blockchain);
-            if (!response2) return false;
+            bool isValid = BlockchainValidation.IsValid(blockchain);
+            if (!isValid) return false;
+            bool isBetter = CompareTwoBlockchains.IsBetter(blockchain, _blockchain);
+            if (!isBetter) return false;
             _blockchain = blockchain;
             return true;
         }
@@ -87,7 +87,7 @@ namespace Services.Blockchains
                 Miner = _minerWallet.PublicKey,
                 Recipient = _minerWallet.PublicKey,
                 Sender = _blockchain.IssuerWallet.PublicKey,
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds()
             };
             _signTransactionServ.Initialize(transaction, _blockchain.IssuerWallet.PrivateKey);
             transaction.Signature = _signTransactionServ.GetSignature();

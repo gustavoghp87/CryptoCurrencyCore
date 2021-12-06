@@ -17,7 +17,7 @@ namespace Services.Blockchains
                     }
                 }
             }
-            return true;
+            return true;    // TODO: isBetter != isEqual
         }
     }
 }

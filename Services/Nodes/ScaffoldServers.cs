@@ -13,8 +13,9 @@ namespace Services.Nodes
         {
             return new List<Node>() {
                 new Node() { Address = new Uri("https://mysterious-thicket-34741.herokuapp.com/") },
-                new Node() { Address = new Uri("https://localhost:5001") },
-                new Node() { Address = new Uri("https://localhost:5003") }
+                new Node() { Address = new Uri("https://limitless-sands-00250.herokuapp.com/") },
+                new Node() { Address = new Uri("http://190.231.194.136/") },
+                new Node() { Address = new Uri("http://190.231.194.136:8081/") }
             };
         }
         //public static bool Connect(string nodeId)

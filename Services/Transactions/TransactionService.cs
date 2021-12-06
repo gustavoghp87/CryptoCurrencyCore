@@ -54,7 +54,7 @@ namespace Services.Transactions
         {
             return WalletService.IsVerifiedMessage(transaction);
         }
-        private bool IsTimeValidated(DateTime timestamp)
+        private bool IsTimeValidated(long timestamp)
         {
             //DateTime timeLimit = _actualDateTime.AddMinutes(_timeZone);
             //if (timestamp > _actualDateTime && timestamp < timeLimit) return true;
@@ -85,8 +85,7 @@ namespace Services.Transactions
             int auxiliar = 0;
             foreach (Transaction aTransaction in _lstTransactions)
             {
-                if (aTransaction.Signature == transaction.Signature
-                    && aTransaction.Timestamp == transaction.Timestamp)
+                if (aTransaction.Signature == transaction.Signature && aTransaction.Timestamp == transaction.Timestamp)
                 {
                     auxiliar++;
                     if (auxiliar > 1) return false;

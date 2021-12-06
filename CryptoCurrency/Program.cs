@@ -13,7 +13,9 @@ namespace CryptoCurrency
         }
         public static void Main(string[] args)
         {
-            Console.WriteLine("Starting with domain name " + DomainName);
+            Console.WriteLine(DateTime.Now);
+            Console.WriteLine("Local: " + DateTime.UtcNow);
+            Console.WriteLine("Starting app with domain name " + DomainName);
             BlockchainService.DomainName = DomainName;
             CreateHostBuilder(args).Build().Run();
         }

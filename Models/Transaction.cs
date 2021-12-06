@@ -10,6 +10,6 @@ namespace Models
         public string Recipient { get; set; }
         public string Sender { get; set; }
         public string Signature { get; set; }
-        public DateTime Timestamp { get; set; }
+        public long Timestamp { get; set; }
     }
 }
