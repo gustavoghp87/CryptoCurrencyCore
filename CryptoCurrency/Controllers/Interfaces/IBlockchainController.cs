@@ -1,13 +1,12 @@
-﻿using Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
+using Models;
 
 namespace CryptoCurrency.Controllers.Interfaces
 {
     internal interface IBlockchainController
     {
         IActionResult Get();
-        Task<IActionResult> Mine();
+        IActionResult Mine();
         IActionResult ReceiveNew(Blockchain blockchain);
         IActionResult Validate();
     }

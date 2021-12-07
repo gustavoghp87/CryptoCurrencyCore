@@ -1,8 +1,8 @@
 namespace Services.Blockchains
 {
-    public class NewDifficulty
+    public static class NewDifficulty
     {
-        public int Get()
+        public static int Get()
         {
             return 3;
         }

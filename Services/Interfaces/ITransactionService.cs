@@ -1,14 +1,15 @@
+using Models;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using Transaction = Models.Transaction;
 
 namespace Services.Interfaces
 {
     public interface ITransactionService
     {
-        Task<bool> Add(Models.Transaction transactionReq);
+        bool Add(Transaction transactionReq, Blockchain blockchain);
         void Clear();
-        List<Models.Transaction> GetAll();
+        List<Transaction> GetAll();
         void RenewDateTime(DateTime dateTime);
     }
 }

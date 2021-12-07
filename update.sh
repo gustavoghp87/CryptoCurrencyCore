@@ -10,5 +10,5 @@ docker rmi -f crypto-image;
 printf "*** building... *** "
 docker build -t crypto-image .;
 printf "*** starting... *** "
-docker run -p 80:8080 -d --restart always --name crypto-ps crypto-image;
+docker run -p 8081:8080 -d --restart always --name crypto-ps crypto-image;
 printf "*** done *** "

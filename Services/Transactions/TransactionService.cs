@@ -1,38 +1,37 @@
 using Models;
 using Services.Interfaces;
+using Services.Wallets;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Services.Transactions
 {
     public class TransactionService : ITransactionService
     {
         private List<Transaction> _lstTransactions;
-        private IBalanceService _balanceServ;
-        private DateTime _actualDateTime;
-        private readonly int _timeZone = 1;    // 1 minute
-        public TransactionService(IBalanceService balanceServ)
+        // private DateTime _actualDateTime;
+        // private readonly int _timeZone = 1;    // 1 minute
+        public TransactionService()
         {
             _lstTransactions = new();
-            _balanceServ = balanceServ;
         }
-        public async Task<bool> Add(Transaction transactionReq)
+        public bool Add(Transaction transactionReq, Blockchain blockchain)
         {
             Transaction transaction = new();
             transaction.Amount = transactionReq.Amount;
             transaction.Fees = transactionReq.Fees;
-            transaction.Miner = Miner.MinerWallet.PublicKey;
+            transaction.Miner = Miner.Wallet.PublicKey;
             transaction.Recipient = transactionReq.Recipient;
             transaction.Sender = transactionReq.Sender;
             transaction.Signature = transactionReq.Signature;
             transaction.Timestamp = transactionReq.Timestamp;
+            transaction.Date = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(transactionReq.Timestamp);
             if (!IsTimeValidated(transaction.Timestamp)) return false;
             if (transactionReq.Amount < 0 || transaction.Fees < 0) return false;
             if (transactionReq.Amount == 0 && transaction.Fees == 0) return false;
             if (transactionReq.Sender == Issuer.Wallet.PublicKey && transactionReq.Amount > 0) return false;
-            if (!IsVerified(transaction)) return false;
-            bool success = await Create(transaction);
+            if (!WalletService.IsVerifiedMessage(transaction)) return false;
+            bool success = Create(transaction, blockchain);
             // SendToNodes();
             return success;
         }
@@ -42,7 +41,7 @@ namespace Services.Transactions
         }
         public void RenewDateTime(DateTime dateTime)
         {
-            _actualDateTime = dateTime;
+            // _actualDateTime = dateTime;
         }
         public void Clear()
         {
@@ -50,10 +49,6 @@ namespace Services.Transactions
         }
 
         // private methods
-        private static bool IsVerified(Transaction transaction)
-        {
-            return WalletService.IsVerifiedMessage(transaction);
-        }
         private bool IsTimeValidated(long timestamp)
         {
             //DateTime timeLimit = _actualDateTime.AddMinutes(_timeZone);
@@ -61,11 +56,11 @@ namespace Services.Transactions
             //else return false;
             return true;
         }
-        private async Task<bool> Create(Transaction transaction)
+        private bool Create(Transaction transaction, Blockchain blockchain)
         {
             if (transaction.Sender == transaction.Recipient) return false;
             if (!CheckJustOnePerTurn(transaction)) return false;
-            if (!await HasBalance(transaction)) return false;
+            if (!HasBalance(transaction, blockchain)) return false;
             _lstTransactions.Add(transaction);
             return true;
         }
@@ -77,7 +72,7 @@ namespace Services.Transactions
             }
             return true;
         }
-        private async Task<bool> HasBalance(Transaction transaction)
+        private bool HasBalance(Transaction transaction, Blockchain blockchain)
         {
             if (transaction.Sender == Issuer.Wallet.PublicKey) return true;    // limite this to issues
 
@@ -91,8 +86,7 @@ namespace Services.Transactions
                     if (auxiliar > 1) return false;
                 }
             }
-            _balanceServ.Initialize(transaction.Sender, _lstTransactions);
-            decimal balance = await _balanceServ.GetAsync();
+            decimal balance = WalletService.GetBalance(transaction.Sender, blockchain, _lstTransactions);
             return balance >= transaction.Amount + transaction.Fees;
         }
     }

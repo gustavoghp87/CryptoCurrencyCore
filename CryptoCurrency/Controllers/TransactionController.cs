@@ -5,7 +5,6 @@ using Models;
 using Services.Interfaces;
 using Services.Transactions;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace CryptoCurrency.Controllers
 {
@@ -15,12 +14,12 @@ namespace CryptoCurrency.Controllers
     [Produces("application/json")]
     public class TransactionController : ControllerBase, ITransactionController
     {
-        private static ITransactionService _transactionService;
-        private static ISignTransactionService _signTransactionService;
-        public TransactionController(ITransactionService transactionService, SignTransactionService signTransactionService)
+        private ITransactionService _transactionService;
+        private IBlockchainService _blockchainService;
+        public TransactionController(ITransactionService transactionService, IBlockchainService blockchainService)
         {
             _transactionService = transactionService;
-            _signTransactionService = signTransactionService;
+            _blockchainService = blockchainService;
         }
 
         [HttpGet]
@@ -31,19 +30,19 @@ namespace CryptoCurrency.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddTransaction(Transaction transactionRequest)
+        public IActionResult AddTransaction(Transaction transactionRequest)
         {
-            bool response = await _transactionService.Add(transactionRequest);
+            bool response = _transactionService.Add(transactionRequest, _blockchainService.Get());
             if (!response) return BadRequest();
             return Ok(transactionRequest);
         }
 
-        [HttpPost("signature")]
+        [HttpPatch]
         public IActionResult Sign(Transaction transactionRequest, string privateKey)
         {
-            if (privateKey == null | privateKey == "") return BadRequest();
-            _signTransactionService.Initialize(transactionRequest, privateKey);
-            transactionRequest.Signature = _signTransactionService.GetSignature();
+            if (privateKey == null | privateKey == "") return BadRequest();    // TODO: validation
+            transactionRequest.Signature = TransactionSignature.Sign(transactionRequest, privateKey);
+            transactionRequest.Miner = Miner.Wallet.PublicKey;
             return Ok(transactionRequest);
         }
     }

@@ -70,7 +70,8 @@ namespace Services.Blocks
             {
                 signs += transaction.Signature;
             }
-            return $"{block.Index}-[{block.Timestamp:yyyy-MM-dd HH:mm:ss}]-{block.Nonce}-{block.PreviousHash}-{signs}";
+            // return $"{block.Index}-[{block.Timestamp:yyyy-MM-dd HH:mm:ss}]-{block.Nonce}-{block.PreviousHash}-{signs}";
+            return $"{block.Index}-[{block.Timestamp}]-{block.Nonce}-{block.PreviousHash}-{signs}";
         }
             // TODO: Difficulty in message ??
     }

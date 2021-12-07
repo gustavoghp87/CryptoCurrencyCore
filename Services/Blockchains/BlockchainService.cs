@@ -1,31 +1,28 @@
 using Models;
 using Services.Blocks;
 using Services.Interfaces;
+using Services.Transactions;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Services.Blockchains
 {
     public partial class BlockchainService : IBlockchainService
     {
         public static string DomainName { get; set; }
-        private Blockchain _blockchain;
         private readonly INodeService _nodeService;
         private readonly ITransactionService _transactionServ;
-        private readonly ISignTransactionService _signTransactionServ;
         private readonly Wallet _minerWallet;
-        public BlockchainService(INodeService nodeService, ITransactionService transactionServ,
-            ISignTransactionService signTransactionService)
+        private Blockchain _blockchain;
+        public BlockchainService(INodeService nodeService, ITransactionService transactionServ)
         {
             _blockchain = new();
             _blockchain.IssuerWallet = Issuer.Wallet;
-            _minerWallet = Miner.MinerWallet;
+            _minerWallet = Miner.Wallet;
             _nodeService = nodeService;
-            // _nodeService.RegisterMe();
+            _nodeService.RegisterMe();
             _blockchain.Nodes = _nodeService.GetAll();
             _transactionServ = transactionServ;
-            _signTransactionServ = signTransactionService;
             Blockchain largestBC = _nodeService.GetLongestBlockchain();
             if (largestBC != null && largestBC.Blocks != null && largestBC.Blocks.Count != 0)
             {
@@ -38,9 +35,13 @@ namespace Services.Blockchains
                 Mine();
             }
         }
-        public async Task<bool> Mine()
+        public Blockchain Get()
         {
-            bool response = await PayMeReward();
+            return _blockchain;
+        }
+        public bool Mine()
+        {
+            bool response = PayMeReward();
             if (!response) return false;
 
             Block lastBlock = _blockchain.Blocks != null && _blockchain.Blocks.Count != 0 ? _blockchain.Blocks.Last() : null;
@@ -48,7 +49,7 @@ namespace Services.Blockchains
                 lastBlock != null ? lastBlock.Index + 1 : 1,
                 lastBlock != null ? lastBlock.Hash : "null!",
                 _transactionServ.GetAll(),
-                new NewDifficulty().Get())
+                NewDifficulty.Get())
             .GetMined();
 
             if (newBlock == null) return false;
@@ -56,14 +57,10 @@ namespace Services.Blockchains
             if (_blockchain.Blocks == null) return false;
             _blockchain.Blocks.Add(newBlock);
             _blockchain.LastDifficulty = newBlock.DifficultyScore;
-            _blockchain.Nodes = _nodeService.GetAll();            // TODO: add my ip
+            _blockchain.Nodes = _nodeService.GetAll();
             _nodeService.SendNewBlockchain(_blockchain);
             _transactionServ.Clear();
             return true;
-        }
-        public Blockchain Get()
-        {
-            return _blockchain;
         }
         public bool ReceiveNew(Blockchain blockchain)
         {
@@ -76,7 +73,7 @@ namespace Services.Blockchains
         }
 
         #region private methods region    ///////////////////////////////////////////////////////////////////////
-        private async Task<bool> PayMeReward()
+        private bool PayMeReward()
         {
             decimal reward = Reward.Get(_blockchain.Blocks != null ? _blockchain.Blocks.Count + 1 : 1);
             _blockchain.LastReward = reward;
@@ -87,11 +84,10 @@ namespace Services.Blockchains
                 Miner = _minerWallet.PublicKey,
                 Recipient = _minerWallet.PublicKey,
                 Sender = _blockchain.IssuerWallet.PublicKey,
-                Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds()
+                Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
             };
-            _signTransactionServ.Initialize(transaction, _blockchain.IssuerWallet.PrivateKey);
-            transaction.Signature = _signTransactionServ.GetSignature();
-            return await _transactionServ.Add(transaction);
+            transaction.Signature = TransactionSignature.Sign(transaction, _blockchain.IssuerWallet.PrivateKey);
+            return _transactionServ.Add(transaction, _blockchain);
         }
         #endregion
     }

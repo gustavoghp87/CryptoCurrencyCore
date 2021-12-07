@@ -16,7 +16,8 @@ namespace Services.Blocks
             _block.PreviousHash = previousHash;
             _block.Transactions = new();
             _block.Transactions.AddRange(lstTransactions);
-            _block.Timestamp = DateTime.UtcNow;
+            _block.Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            _block.Date = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(_block.Timestamp);
             _block.Nonce = 0;
             _block.Hash = "";
             Mine();
@@ -28,9 +29,7 @@ namespace Services.Blocks
         
         private void Mine()
         {
-            ProofOfWorkService proofServ = new(_block);
-            _block.Nonce = proofServ.GetNonce();
-            _block.Hash = proofServ.GetHash();
+            _block = ProofOfWorkService.Create(_block);
             //ValidateBlockService.GetBestHash(_block);        // not connected
         }
     }

@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using Services.Blockchains;
+using Services.Interfaces;
 
 namespace CryptoCurrency
 {
@@ -25,7 +25,7 @@ namespace CryptoCurrency
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CryptoCurrency", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CryptoCurrency", Version = "v2" });
             });
             services.AddControllers().AddNewtonsoftJson(options =>
             {
@@ -52,7 +52,7 @@ namespace CryptoCurrency
             builder.RegisterModule(new ProgramModule());
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IBlockchainService blockchainService)
         {
             //if (env.IsDevelopment())
             //{
@@ -68,6 +68,7 @@ namespace CryptoCurrency
             {
                 endpoints.MapControllers();
             });
+            blockchainService.Get();
         }
     }
 }

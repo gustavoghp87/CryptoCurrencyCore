@@ -9,7 +9,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Services.Nodes
 {
@@ -19,6 +18,7 @@ namespace Services.Nodes
         public NodeService()
         {
             _lstNodes = new();
+            _lstNodes.Add(new Node() { Address = new Uri (BlockchainService.DomainName) });
             UpdateList();
         }
         public Blockchain GetLongestBlockchain()
@@ -40,17 +40,14 @@ namespace Services.Nodes
         {
             return _lstNodes;
         }
-        public async Task RegisterMe()
+        public void RegisterMe()
         {
-            int counter = 0;
             if (_lstNodes == null || _lstNodes.Count == 0) return;
+            var httpContent = new StringContent("", Encoding.UTF8, "application/json");
             foreach (Node node in _lstNodes)
             {
-                var httpContent = new StringContent("", Encoding.UTF8, "application/json");
-                var response = await new HttpClient().PostAsJsonAsync(node.Address + "api/node", httpContent);
-                if (response.IsSuccessStatusCode) counter++;
+                new HttpClient().PostAsJsonAsync(node.Address + "api/node", httpContent);
             }
-            Console.WriteLine("Registered in " + counter + " servers");
             
             // var httpClient = new HttpClient();
             // var stringPayload = JsonConvert.SerializeObject(new { Ip = "http://localhost:5000" });
@@ -58,7 +55,6 @@ namespace Services.Nodes
             // var httpResponse = await httpClient.PostAsync("http://localhost:10000/registry", httpContent);
             // if (!httpResponse.IsSuccessStatusCode) return;
             
-            Console.WriteLine(counter);
         }
         public bool RegisterOne(Node node)
         {
@@ -70,10 +66,13 @@ namespace Services.Nodes
         public void SendNewBlockchain(Blockchain newBlockchain)
         {
             if (_lstNodes == null) return;
-            _lstNodes.ForEach(node =>
+            foreach (Node node in _lstNodes)
             {
-                new HttpClient().PostAsJsonAsync(node.Address + "api/blockchain", newBlockchain);
-            });
+                if (node.Address.ToString() == BlockchainService.DomainName) continue;
+                string url = node.Address + "api/blockchain";
+                Console.WriteLine("Sending new blockchain to " + url);
+                new HttpClient().PostAsJsonAsync(url, newBlockchain);
+            }
         }
 
         #region private methods region    ///////////////////////////////////////////////////////////////////////
@@ -98,7 +97,7 @@ namespace Services.Nodes
         {
             Console.WriteLine("Looking for nodes from " + node.Address.ToString());
             Console.WriteLine("My domain name is " + BlockchainService.DomainName);
-            if (node.Address.ToString() == BlockchainService.DomainName)
+            if (node.Address.ToString() == BlockchainService.DomainName || node.Address.ToString() == BlockchainService.DomainName + "/")
             {
                 Console.WriteLine("This is my domain name......... cancelled");
                 return;

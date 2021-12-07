@@ -19,9 +19,9 @@ namespace Tests
         public void Test2(string some)
         {
             Console.WriteLine(some);
-            var miner = Miner.MinerWallet;
-            Console.WriteLine(miner.PublicKey);
-            Assert.Equal("L4fkiGDz1jdeTqo2rDUehWEWtDi3zhTnHwETi46zN9XGLoiAb9Rd", miner.PrivateKey);
+            //var miner = Miner.Wallet;
+            //Console.WriteLine(miner.PublicKey);
+            // Assert.Equal("L4fkiGDz1jdeTqo2rDUehWEWtDi3zhTnHwETi46zN9XGLoiAb9Rd", miner.PrivateKey);
         }
     }
 }

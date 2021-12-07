@@ -1,5 +1,6 @@
 using Models;
 using Services.Blocks;
+using Services.Wallets;
 using System.Linq;
 
 namespace Services.Blockchains
@@ -18,8 +19,9 @@ namespace Services.Blockchains
             {
                 Block block = blockchain.Blocks.ElementAt(i);
                 Block lastBlock = blockchain.Blocks.ElementAt(i - 1);
-                ProofOfWorkService powService = new(lastBlock);
-                if (block.PreviousHash != powService.GetHash()) return false;
+                lastBlock = ProofOfWorkService.Create(lastBlock);
+
+                if (block.PreviousHash != lastBlock.Hash) return false;
                 if (!ValidateBlock.IsValid(block)) return false;
                 int issuerCounter = 0;
                 if (block.Transactions == null || block.Transactions.Count == 0) return false;

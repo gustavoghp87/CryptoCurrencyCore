@@ -1,6 +1,5 @@
 using Models;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Services.Interfaces
 {
@@ -8,8 +7,7 @@ namespace Services.Interfaces
     {
         List<Node> GetAll();
         Blockchain GetLongestBlockchain();
-        // void Initialize(string apiUrl);
-        Task RegisterMe();
+        void RegisterMe();
         bool RegisterOne(Node node);
         void SendNewBlockchain(Blockchain newBlockchain);
     }

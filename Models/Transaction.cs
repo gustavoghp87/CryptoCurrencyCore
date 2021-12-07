@@ -11,5 +11,6 @@ namespace Models
         public string Sender { get; set; }
         public string Signature { get; set; }
         public long Timestamp { get; set; }
+        public DateTime Date { get; set; }
     }
 }

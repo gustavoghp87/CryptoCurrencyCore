@@ -3,6 +3,7 @@ using Services.Blockchains;
 using Services.Interfaces;
 using Services.Nodes;
 using Services.Transactions;
+using Services.Wallets;
 
 namespace CryptoCurrency
 {
@@ -10,11 +11,15 @@ namespace CryptoCurrency
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<BlockchainService>().As<IBlockchainService>().SingleInstance();
-            builder.RegisterType<TransactionService>().As<ITransactionService>().SingleInstance();
-            builder.RegisterType<NodeService>().As<INodeService>().SingleInstance();
-            builder.RegisterType<BalanceService>().As<IBalanceService>();
-            builder.RegisterType<SignTransactionService>().As<ISignTransactionService>();
+            builder.RegisterType<BlockchainService>()
+                .As<IBlockchainService>()
+                .SingleInstance();
+            builder.RegisterType<NodeService>()
+                .As<INodeService>()
+                .SingleInstance();
+            builder.RegisterType<TransactionService>()
+                .As<ITransactionService>()
+                .SingleInstance();
         }
     }
 }

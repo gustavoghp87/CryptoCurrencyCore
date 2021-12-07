@@ -5,7 +5,6 @@ using Models;
 using Services.Blockchains;
 using Services.Interfaces;
 using System;
-using System.Threading.Tasks;
 
 namespace CryptoCurrency.Controllers
 {
@@ -15,7 +14,6 @@ namespace CryptoCurrency.Controllers
     [Produces("application/json")]
     public class BlockchainController : ControllerBase, IBlockchainController
     {
-        private Blockchain _blockchain;
         private readonly IBlockchainService _blockchainServ;
         public BlockchainController(IBlockchainService blockchainService)
         {
@@ -25,9 +23,9 @@ namespace CryptoCurrency.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            _blockchain = _blockchainServ.Get();
+            Blockchain blockchain = _blockchainServ.Get();
             Console.WriteLine("Getting blockchain -.-.-.----.");
-            return Ok(_blockchain);
+            return Ok(blockchain);
         }
 
         [HttpPost]
@@ -38,9 +36,9 @@ namespace CryptoCurrency.Controllers
         }
 
         [HttpGet("mine")]
-        public async Task<IActionResult> Mine()
+        public IActionResult Mine()
         {
-            bool response = await _blockchainServ.Mine();
+            bool response = _blockchainServ.Mine();
             if (!response) return StatusCode(500);
             Blockchain blockchain = _blockchainServ.Get();
             return Ok(blockchain);
@@ -49,8 +47,8 @@ namespace CryptoCurrency.Controllers
         [HttpGet("validation")]
         public IActionResult Validate()
         {
-            _blockchain = _blockchainServ.Get();
-            bool response = BlockchainValidation.IsValid(_blockchain);
+            Blockchain blockchain = _blockchainServ.Get();
+            bool response = BlockchainValidation.IsValid(blockchain);
             return Ok(response);
         }
     }
