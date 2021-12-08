@@ -60,7 +60,7 @@ namespace Services.Nodes
         {
             if (_lstNodes != null) return false;
             if (!_lstNodes.Contains(node)) _lstNodes.Add(node);
-            GetFromOne(node);
+            // GetFromOne(node);    loop
             return CheckNew(node);
         }
         public void SendNewBlockchain(Blockchain newBlockchain)
@@ -95,11 +95,10 @@ namespace Services.Nodes
         }
         private void GetFromOne(Node node)
         {
-            Console.WriteLine("Looking for nodes from " + node.Address.ToString());
-            Console.WriteLine("My domain name is " + BlockchainService.DomainName);
+            Console.WriteLine("\nLooking for nodes from " + node.Address.ToString());
             if (node.Address.ToString() == BlockchainService.DomainName || node.Address.ToString() == BlockchainService.DomainName + "/")
             {
-                Console.WriteLine("This is my domain name......... cancelled");
+                Console.WriteLine("This is my domain name......... cancelled\n");
                 return;
             }
             try
@@ -111,7 +110,10 @@ namespace Services.Nodes
                 var lstNodes = JsonConvert.DeserializeObject<List<Node>>(json);
                 if (lstNodes != null && lstNodes.Count > 0)
                 {
+                    int i = 0;
                     lstNodes.ForEach(node => {
+                        i++;
+                        Console.WriteLine("Coming node " + i + " of " + lstNodes.Count + ": " + node.Address.ToString());
                         RegisterOne(node);
                     });
                 }
