@@ -7,7 +7,7 @@ namespace Services.Transactions
     {
         public static string Sign(Transaction transaction, string privateKey)
         {
-            var signature = WalletService.SignMessage(transaction, privateKey);
+            var signature = WalletService.GetTransactionSignature(transaction, privateKey);
             return signature;
         }
     }

@@ -39,7 +39,7 @@ namespace Services.Nodes
                     try
                     {
                         var url = new Uri(node.Address + "api/blockchain");
-                        Console.WriteLine(url.ToString());
+                        Console.WriteLine("Requiring blockchain from " + url.ToString());
                         var request = (HttpWebRequest)WebRequest.Create(url);
                         var response = (HttpWebResponse)request.GetResponse();
                         if (response.StatusCode != HttpStatusCode.OK) continue;
@@ -54,11 +54,13 @@ namespace Services.Nodes
         {
             foreach (Blockchain blockchain in _lstBlockchains)
             {
-                if (blockchain.Blocks == null) return;
-                if (_largestBlockchain.Blocks != null)
+                if (blockchain.Blocks == null || blockchain.Blocks.Count == 0) continue;
+                if (_largestBlockchain != null && _largestBlockchain.Blocks != null)
                 {
                     if (blockchain.Blocks.Count > _largestBlockchain.Blocks.Count && BlockchainValidation.IsValid(blockchain))
                         _largestBlockchain = blockchain;
+                    else
+                        Console.WriteLine("Blockchain refused");
                 }
                 else if (BlockchainValidation.IsValid(blockchain))
                 {

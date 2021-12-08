@@ -17,15 +17,17 @@ namespace Services.Transactions
         }
         public bool Add(Transaction transactionReq, Blockchain blockchain)
         {
-            Transaction transaction = new();
-            transaction.Amount = transactionReq.Amount;
-            transaction.Fees = transactionReq.Fees;
-            transaction.Miner = Miner.Wallet.PublicKey;
-            transaction.Recipient = transactionReq.Recipient;
-            transaction.Sender = transactionReq.Sender;
-            transaction.Signature = transactionReq.Signature;
-            transaction.Timestamp = transactionReq.Timestamp;
-            transaction.Date = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(transactionReq.Timestamp);
+            Transaction transaction = new()
+            {
+                Amount = transactionReq.Amount,
+                Fees = transactionReq.Fees,
+                Miner = Miner.Wallet.PublicKey,
+                Recipient = transactionReq.Recipient,
+                Sender = transactionReq.Sender,
+                Signature = transactionReq.Signature,
+                Timestamp = transactionReq.Timestamp,
+                Date = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(transactionReq.Timestamp)
+            };
             if (!IsTimeValidated(transaction.Timestamp)) return false;
             if (transactionReq.Amount < 0 || transaction.Fees < 0) return false;
             if (transactionReq.Amount == 0 && transaction.Fees == 0) return false;

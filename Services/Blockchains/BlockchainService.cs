@@ -24,9 +24,10 @@ namespace Services.Blockchains
             _blockchain.Nodes = _nodeService.GetAll();
             _transactionServ = transactionServ;
             Blockchain largestBC = _nodeService.GetLongestBlockchain();
-            if (largestBC != null && largestBC.Blocks != null && largestBC.Blocks.Count != 0)
+            if (largestBC != null && largestBC.Blocks != null && largestBC.Blocks.Count > 0)
             {
                 _blockchain = largestBC;
+                Console.WriteLine("#######################  Taken blockchain from net ####################### Running on " + DomainName);
             }
             else
             {

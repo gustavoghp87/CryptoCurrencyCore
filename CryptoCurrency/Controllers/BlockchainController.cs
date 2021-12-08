@@ -31,6 +31,8 @@ namespace CryptoCurrency.Controllers
         [HttpPost]
         public IActionResult ReceiveNew(Blockchain blockchain)
         {
+            Console.WriteLine("//////////////////// BLOCKCHAIN POST REQUEST: ////////////////////");
+            Console.WriteLine(blockchain);
             bool response = _blockchainServ.ReceiveNew(blockchain);
             return Ok(response);
         }

@@ -57,7 +57,7 @@ namespace Services.Wallets
             newWallet.BitcoinAddress = BitcoinAddress.Create(newWallet.PublicKey, Network.Main).ToString();
             return newWallet;
         }
-        public static string SignMessage(Transaction transaction, string privateKey)
+        public static string GetTransactionSignature(Transaction transaction, string privateKey)
         {
             var secret = Network.Main.CreateBitcoinSecret(privateKey);
             var message = TransactionMessage.Generate(transaction);
@@ -71,6 +71,7 @@ namespace Services.Wallets
             string signedMessage = transaction.Signature;
             IPubkeyHashUsable address = (IPubkeyHashUsable)BitcoinAddress.Create(senderPublicKey, Network.Main);
             bool result = address.VerifyMessage(originalMessage, signedMessage);
+            System.Console.WriteLine("Refused transaction");
             return result;
         }
     }

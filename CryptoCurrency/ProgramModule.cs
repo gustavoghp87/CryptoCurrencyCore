@@ -3,11 +3,10 @@ using Services.Blockchains;
 using Services.Interfaces;
 using Services.Nodes;
 using Services.Transactions;
-using Services.Wallets;
 
 namespace CryptoCurrency
 {
-    public class ProgramModule: Module
+    internal class ProgramModule: Module
     {
         protected override void Load(ContainerBuilder builder)
         {
