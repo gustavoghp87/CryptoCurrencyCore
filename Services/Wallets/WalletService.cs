@@ -1,6 +1,7 @@
 using Models;
 using NBitcoin;
 using Services.Transactions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Transaction = Models.Transaction;
@@ -20,11 +21,14 @@ namespace Services.Wallets
                 if (senderPublicKey == aTransaction.Recipient)
                     balance += aTransaction.Amount;
                 else if (senderPublicKey == aTransaction.Sender)
+                {
                     balance -= aTransaction.Amount;
+                    balance -= aTransaction.Fees;
+                }
                 if (senderPublicKey == aTransaction.Miner)
                     balance += aTransaction.Fees;
-                if (senderPublicKey == issuerAddress)
-                    balance -= aTransaction.Fees;
+                //if (senderPublicKey == issuerAddress)
+                //    balance -= aTransaction.Fees;
             }
             return balance;
         }
@@ -59,10 +63,18 @@ namespace Services.Wallets
         }
         public static string GetTransactionSignature(Transaction transaction, string privateKey)
         {
-            var secret = Network.Main.CreateBitcoinSecret(privateKey);
-            var message = TransactionMessage.Generate(transaction);
-            var signature = secret.PrivateKey.SignMessage(message);
-            return signature;
+            try
+            {
+                var secret = Network.Main.CreateBitcoinSecret(privateKey);
+                var message = TransactionMessage.Generate(transaction);
+                var signature = secret.PrivateKey.SignMessage(message);
+                return signature;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return "";
+            }
         }
         public static bool IsVerifiedMessage(Transaction transaction)
         {

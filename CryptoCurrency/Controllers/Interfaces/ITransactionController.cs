@@ -5,8 +5,8 @@ namespace CryptoCurrency.Controllers.Interfaces
 {
     internal interface ITransactionController
     {
-        IActionResult AddTransaction(Transaction transactionRequest);
+        IActionResult AddTransaction(Transaction transaction);
         IActionResult GetAll();
-        IActionResult Sign(Transaction transactionRequest, string privateKey);
+        IActionResult Sign(TransactionRequest transactionRequest);
     }
 }

@@ -78,6 +78,7 @@ namespace Services.Blockchains
         {
             decimal reward = Reward.Get(_blockchain.Blocks != null ? _blockchain.Blocks.Count + 1 : 1);
             _blockchain.LastReward = reward;
+            long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             Transaction transaction = new()
             {
                 Amount = 0,
@@ -85,7 +86,8 @@ namespace Services.Blockchains
                 Miner = _minerWallet.PublicKey,
                 Recipient = _minerWallet.PublicKey,
                 Sender = _blockchain.IssuerWallet.PublicKey,
-                Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
+                Timestamp = timestamp,
+                Date = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(timestamp)
             };
             transaction.Signature = TransactionSignature.Sign(transaction, _blockchain.IssuerWallet.PrivateKey);
             return _transactionServ.Add(transaction, _blockchain);

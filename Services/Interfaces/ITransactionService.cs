@@ -7,7 +7,7 @@ namespace Services.Interfaces
 {
     public interface ITransactionService
     {
-        bool Add(Transaction transactionReq, Blockchain blockchain);
+        bool Add(Transaction transaction, Blockchain blockchain);
         void Clear();
         List<Transaction> GetAll();
         void RenewDateTime(DateTime dateTime);

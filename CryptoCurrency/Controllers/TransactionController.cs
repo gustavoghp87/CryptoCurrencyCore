@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Models;
 using Services.Interfaces;
 using Services.Transactions;
+using System;
 using System.Collections.Generic;
 
 namespace CryptoCurrency.Controllers
@@ -30,20 +31,38 @@ namespace CryptoCurrency.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddTransaction(Transaction transactionRequest)
+        public IActionResult AddTransaction(Transaction transaction)
         {
-            bool response = _transactionService.Add(transactionRequest, _blockchainService.Get());
+            if (!ModelState.IsValid) return BadRequest("Invalid data");
+            bool response = _transactionService.Add(transaction, _blockchainService.Get());
             if (!response) return BadRequest();
-            return Ok(transactionRequest);
+            return Ok(transaction);
+        }
+
+        public class PrivateKey
+        {
+            public string Key;
         }
 
         [HttpPatch]
-        public IActionResult Sign(Transaction transactionRequest, string privateKey)
+        public IActionResult Sign(TransactionRequest transactionRequest)
         {
-            if (privateKey == null | privateKey == "") return BadRequest();    // TODO: validation
-            transactionRequest.Signature = TransactionSignature.Sign(transactionRequest, privateKey);
-            transactionRequest.Miner = Miner.Wallet.PublicKey;
-            return Ok(transactionRequest);
+            if (!ModelState.IsValid) return BadRequest("Invalid data");
+            if (transactionRequest == null || transactionRequest.PrivateKey == null || transactionRequest.PrivateKey == "")
+                return BadRequest("Invalid data 2");    // TODO: validation
+            Transaction transaction = new()
+            {
+                Amount = transactionRequest.Amount,
+                Date = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(transactionRequest.Timestamp),
+                Fees = transactionRequest.Fees,
+                Miner = Miner.Wallet.PublicKey,
+                Recipient = transactionRequest.Recipient,
+                Sender = transactionRequest.Sender,
+                Timestamp = transactionRequest.Timestamp
+            };
+            transaction.Signature = TransactionSignature.Sign(transaction, transactionRequest.PrivateKey);
+            if (string.IsNullOrEmpty(transaction.Signature)) return BadRequest("Invalid key");
+            return Ok(transaction);
         }
     }
 }

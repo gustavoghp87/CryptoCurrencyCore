@@ -15,23 +15,14 @@ namespace Services.Transactions
         {
             _lstTransactions = new();
         }
-        public bool Add(Transaction transactionReq, Blockchain blockchain)
+        public bool Add(Transaction transaction, Blockchain blockchain)
         {
-            Transaction transaction = new()
-            {
-                Amount = transactionReq.Amount,
-                Fees = transactionReq.Fees,
-                Miner = Miner.Wallet.PublicKey,
-                Recipient = transactionReq.Recipient,
-                Sender = transactionReq.Sender,
-                Signature = transactionReq.Signature,
-                Timestamp = transactionReq.Timestamp,
-                Date = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(transactionReq.Timestamp)
-            };
+            transaction.Miner = Miner.Wallet.PublicKey;
+            //Date = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(transaction.Timestamp)
             if (!IsTimeValidated(transaction.Timestamp)) return false;
-            if (transactionReq.Amount < 0 || transaction.Fees < 0) return false;
-            if (transactionReq.Amount == 0 && transaction.Fees == 0) return false;
-            if (transactionReq.Sender == Issuer.Wallet.PublicKey && transactionReq.Amount > 0) return false;
+            if (transaction.Amount < 0 || transaction.Fees < 0) return false;
+            if (transaction.Amount == 0 && transaction.Fees == 0) return false;
+            if (transaction.Sender == Issuer.Wallet.PublicKey && transaction.Amount > 0) return false;
             if (!WalletService.IsVerifiedMessage(transaction)) return false;
             bool success = Create(transaction, blockchain);
             // SendToNodes();

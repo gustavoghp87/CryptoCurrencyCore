@@ -25,7 +25,7 @@ namespace CryptoCurrency
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CryptoCurrency", Version = "v2" });
+                c.SwaggerDoc("v3", new OpenApiInfo { Title = "CryptoCurrency", Version = "v3" });
             });
             services.AddControllers().AddNewtonsoftJson(options =>
             {
@@ -58,7 +58,7 @@ namespace CryptoCurrency
             //{
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CryptoCurrency v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v3/swagger.json", "CryptoCurrency v3"));
             //}
             app.UseHttpsRedirection();
             app.UseRouting();
