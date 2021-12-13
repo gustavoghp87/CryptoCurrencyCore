@@ -3,6 +3,7 @@ using Services.Interfaces;
 using Services.Wallets;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Services.Transactions
 {
@@ -18,14 +19,13 @@ namespace Services.Transactions
         public bool Add(Transaction transaction, Blockchain blockchain)
         {
             transaction.Miner = Miner.Wallet.PublicKey;
-            //Date = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(transaction.Timestamp)
+            //Date = TimeService.TakeDateFromUnitTime(transaction.Timestamp)
             if (!IsTimeValidated(transaction.Timestamp)) return false;
             if (transaction.Amount < 0 || transaction.Fees < 0) return false;
             if (transaction.Amount == 0 && transaction.Fees == 0) return false;
             if (transaction.Sender == Issuer.Wallet.PublicKey && transaction.Amount > 0) return false;
-            if (!WalletService.IsVerifiedMessage(transaction)) return false;
+            if (!TransactionSignature.IsVerifiedMessage(transaction)) return false;
             bool success = Create(transaction, blockchain);
-            // SendToNodes();
             return success;
         }
         public List<Transaction> GetAll()
@@ -55,9 +55,10 @@ namespace Services.Transactions
             if (!CheckJustOnePerTurn(transaction)) return false;
             if (!HasBalance(transaction, blockchain)) return false;
             _lstTransactions.Add(transaction);
+            _lstTransactions = _lstTransactions.OrderBy(x => x.Timestamp).ToList();
             return true;
         }
-        private bool CheckJustOnePerTurn(Transaction transaction)
+        private bool CheckJustOnePerTurn(Transaction transaction)    // TODO: instead, signature not repeated
         {
             foreach (var aTransaction in _lstTransactions)
             {

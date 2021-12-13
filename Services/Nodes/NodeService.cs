@@ -43,18 +43,12 @@ namespace Services.Nodes
         public void RegisterMe()
         {
             if (_lstNodes == null || _lstNodes.Count == 0) return;
-            var httpContent = new StringContent("", Encoding.UTF8, "application/json");
+            var stringPayload = JsonConvert.SerializeObject(new { Ip = BlockchainService.DomainName });
+            var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
             foreach (Node node in _lstNodes)
             {
                 new HttpClient().PostAsJsonAsync(node.Address + "api/node", httpContent);
             }
-            
-            // var httpClient = new HttpClient();
-            // var stringPayload = JsonConvert.SerializeObject(new { Ip = "http://localhost:5000" });
-            // var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-            // var httpResponse = await httpClient.PostAsync("http://localhost:10000/registry", httpContent);
-            // if (!httpResponse.IsSuccessStatusCode) return;
-            
         }
         public bool RegisterOne(Node node)
         {
@@ -74,15 +68,26 @@ namespace Services.Nodes
                 new HttpClient().PostAsJsonAsync(url, newBlockchain);
             }
         }
+        public void SendNewTransaction(Transaction transaction)
+        {
+            if (_lstNodes == null) return;
+            foreach (Node node in _lstNodes)
+            {
+                if (node.Address.ToString() == BlockchainService.DomainName) continue;
+                string url = node.Address + "api/transaction";
+                Console.WriteLine("Sending new transaction to " + url);
+                new HttpClient().PostAsJsonAsync(url, transaction);
+            }
+        }
 
-        #region private methods region    ///////////////////////////////////////////////////////////////////////
+
         private void UpdateList()
         {
             GetFromScaffoldServers();
             _lstNodes.ForEach(node => {
                 Console.WriteLine("Connected Node: " + node.Address);
             });
-            // TODO: get request alive man
+            // TODO: alive man request
         }
         private void GetFromScaffoldServers()
         {
@@ -133,6 +138,5 @@ namespace Services.Nodes
                 return false;
             }
         }
-        #endregion
     }
 }

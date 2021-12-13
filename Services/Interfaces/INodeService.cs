@@ -10,5 +10,6 @@ namespace Services.Interfaces
         void RegisterMe();
         bool RegisterOne(Node node);
         void SendNewBlockchain(Blockchain newBlockchain);
+        void SendNewTransaction(Transaction transaction);
     }
 }

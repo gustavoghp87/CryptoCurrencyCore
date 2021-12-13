@@ -1,6 +1,6 @@
 using Models;
 using Services.Blocks;
-using Services.Wallets;
+using Services.Transactions;
 using System.Linq;
 
 namespace Services.Blockchains
@@ -32,7 +32,7 @@ namespace Services.Blockchains
                         if (transaction.Amount != 0 && transaction.Fees != Reward.Get(i)) return false;
                         issuerCounter++;
                     }
-                    if (!WalletService.IsVerifiedMessage(transaction)) return false;
+                    if (!TransactionSignature.IsVerifiedMessage(transaction)) return false;
                 }
                 if (issuerCounter != 1) return false;
             }

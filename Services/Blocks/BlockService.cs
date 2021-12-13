@@ -1,5 +1,4 @@
 using Models;
-using System;
 using System.Collections.Generic;
 
 namespace Services.Blocks
@@ -16,8 +15,8 @@ namespace Services.Blocks
             _block.PreviousHash = previousHash;
             _block.Transactions = new();
             _block.Transactions.AddRange(lstTransactions);
-            _block.Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            _block.Date = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(_block.Timestamp);
+            _block.Timestamp = TimeService.GetCurrentUnixTime();
+            _block.Date = TimeService.GetDateFromUnitTime(_block.Timestamp);
             _block.Nonce = 0;
             _block.Hash = "";
             Mine();

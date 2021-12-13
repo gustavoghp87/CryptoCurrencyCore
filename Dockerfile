@@ -28,6 +28,4 @@ COPY --from=publish /app/out .
 ENV domainName=https://limitless-sands-00250.herokuapp.com/
 CMD ASPNETCORE_URLS=http://*:$PORT dotnet CryptoCurrency.dll
 
-#ENV domainName=http://190.231.194.136/
-#ENV domainName=http://190.231.194.136:8081/
 #CMD ASPNETCORE_URLS=http://*:8080 dotnet CryptoCurrency.dll

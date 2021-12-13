@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Hosting;
+using Services.Interfaces;
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using ST = System.Threading;
 
@@ -8,16 +8,27 @@ namespace Services.Blockchains
 {
     public class MineHostedService : IHostedService, IDisposable
     {
+        private readonly int _number;
         private ST.Timer _timer;
+        private int counter = 0;
+        private readonly IBlockchainService _blockchainService;
+        public MineHostedService(IBlockchainService blockchainService)
+        {
+            _number = 1000 * 100;    // milliseconds
+            _blockchainService = blockchainService;
+        }
         public Task StartAsync(ST.CancellationToken cancellationToken)
         {
             Console.WriteLine("Initializing Mine Hosted Service");
-            long unixTimeSeconds = DateTimeOffset.Now.ToUnixTimeSeconds();
-            //Console.WriteLine(unixTimeSeconds);
-            int timeLeft = 60 - (int)unixTimeSeconds%60;
-            //Console.WriteLine("Waiting (" + timeLeft + " + 60) seconds to start mining");
-            //Console.WriteLine("60 seconds left");
-            _timer = new ST.Timer(InitMiningCycle, null, TimeSpan.Zero, TimeSpan.FromSeconds(60));
+            long unixTime = TimeService.GetCurrentUnixTime();
+            Console.WriteLine("Now: " + unixTime);
+            int timeLeft = (int)(_number - unixTime%_number);
+            Console.WriteLine("Waiting (" + timeLeft + " + " + _number + ") milliseconds to start mining");
+            _timer = new ST.Timer(
+                InitMiningCycle,
+                null,
+                TimeSpan.FromMilliseconds(timeLeft),
+                TimeSpan.FromMilliseconds(_number));
             return Task.CompletedTask;
         }
         public Task StopAsync(ST.CancellationToken cancellationToken)
@@ -31,11 +42,13 @@ namespace Services.Blockchains
 
         private void InitMiningCycle(object o)
         {
-            long unixTimeSeconds = DateTimeOffset.Now.ToUnixTimeSeconds();
-            //Console.WriteLine("Sending best proof of work to network..." + unixTimeSeconds);
-            //Console.WriteLine("Sending post request to Controller to begin mining...");
-            // var httpResponse = new HttpClient().GetAsync("https://localhost:5001/blockchain/mine");
-            // TODO: some kind of verification
+            counter++;
+            if (counter > 1)
+            {
+                long unixTime = TimeService.GetCurrentUnixTime();
+                Console.WriteLine(unixTime + ": Mining " + (counter - 1));
+                _blockchainService.Mine();
+            }
         }
     }
 }

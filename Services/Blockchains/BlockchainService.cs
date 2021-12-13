@@ -65,8 +65,12 @@ namespace Services.Blockchains
         }
         public bool ReceiveNew(Blockchain blockchain)
         {
+            bool isLonger = CompareTwoBlockchains.IsLonger(blockchain, _blockchain);
+            if (!isLonger) return false;
             bool isValid = BlockchainValidation.IsValid(blockchain);
             if (!isValid) return false;
+            bool haveSameTransactions = CompareTwoBlockchains.HaveAtLeastTheSameValidTransactions(blockchain, _blockchain);
+            if (!haveSameTransactions) return false;
             bool isBetter = CompareTwoBlockchains.IsBetter(blockchain, _blockchain);
             if (!isBetter) return false;
             _blockchain = blockchain;
@@ -78,7 +82,7 @@ namespace Services.Blockchains
         {
             decimal reward = Reward.Get(_blockchain.Blocks != null ? _blockchain.Blocks.Count + 1 : 1);
             _blockchain.LastReward = reward;
-            long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            long timestamp = TimeService.GetCurrentUnixTime();
             Transaction transaction = new()
             {
                 Amount = 0,
@@ -87,9 +91,10 @@ namespace Services.Blockchains
                 Recipient = _minerWallet.PublicKey,
                 Sender = _blockchain.IssuerWallet.PublicKey,
                 Timestamp = timestamp,
-                Date = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(timestamp)
+                Date = TimeService.GetDateFromUnitTime(timestamp)
             };
-            transaction.Signature = TransactionSignature.Sign(transaction, _blockchain.IssuerWallet.PrivateKey);
+            transaction.Signature = TransactionSignature.Get(transaction, _blockchain.IssuerWallet.PrivateKey);
+            if (string.IsNullOrEmpty(transaction.Signature)) return false;
             return _transactionServ.Add(transaction, _blockchain);
         }
         #endregion

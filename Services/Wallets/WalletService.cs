@@ -1,7 +1,5 @@
 using Models;
 using NBitcoin;
-using Services.Transactions;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Transaction = Models.Transaction;
@@ -60,31 +58,6 @@ namespace Services.Wallets
             newWallet.PublicKey = bitcoinKey.GetAddress(ScriptPubKeyType.Legacy).ToString();
             newWallet.BitcoinAddress = BitcoinAddress.Create(newWallet.PublicKey, Network.Main).ToString();
             return newWallet;
-        }
-        public static string GetTransactionSignature(Transaction transaction, string privateKey)
-        {
-            try
-            {
-                var secret = Network.Main.CreateBitcoinSecret(privateKey);
-                var message = TransactionMessage.Generate(transaction);
-                var signature = secret.PrivateKey.SignMessage(message);
-                return signature;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return "";
-            }
-        }
-        public static bool IsVerifiedMessage(Transaction transaction)
-        {
-            string senderPublicKey = transaction.Sender;
-            string originalMessage = TransactionMessage.Generate(transaction);
-            string signedMessage = transaction.Signature;
-            IPubkeyHashUsable address = (IPubkeyHashUsable)BitcoinAddress.Create(senderPublicKey, Network.Main);
-            bool result = address.VerifyMessage(originalMessage, signedMessage);
-            System.Console.WriteLine("Refused transaction");
-            return result;
         }
     }
 }
