@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace Models
 {
@@ -9,6 +10,7 @@ namespace Models
         public DateTime Date { get; set; }
         public int Difficulty { get; set; }
         public string DifficultyScore { get; set; }
+        public BigInteger DifficultyScoreNumber { get; set; }
         public string Hash { get; set; }
         public long Nonce { get; set; }
         public string PreviousHash { get; set; }

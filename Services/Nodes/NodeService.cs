@@ -47,7 +47,7 @@ namespace Services.Nodes
             var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
             foreach (Node node in _lstNodes)
             {
-                new HttpClient().PostAsJsonAsync(node.Address + "api/node", httpContent);
+                new HttpClient().PostAsJsonAsync(node.NodeRequestAddress, httpContent);
             }
         }
         public bool RegisterOne(Node node)
@@ -63,7 +63,7 @@ namespace Services.Nodes
             foreach (Node node in _lstNodes)
             {
                 if (node.Address.ToString() == BlockchainService.DomainName) continue;
-                string url = node.Address + "api/blockchain";
+                Uri url = node.BlockchainRequestAddress;
                 Console.WriteLine("Sending new blockchain to " + url);
                 new HttpClient().PostAsJsonAsync(url, newBlockchain);
             }
@@ -74,7 +74,7 @@ namespace Services.Nodes
             foreach (Node node in _lstNodes)
             {
                 if (node.Address.ToString() == BlockchainService.DomainName) continue;
-                string url = node.Address + "api/transaction";
+                Uri url = node.TransactionRequestAddress;
                 Console.WriteLine("Sending new transaction to " + url);
                 new HttpClient().PostAsJsonAsync(url, transaction);
             }
@@ -94,21 +94,22 @@ namespace Services.Nodes
             List<Node> scaffoldServersList = ScaffoldServers.Get();
             if (scaffoldServersList == null) return;
             scaffoldServersList.ForEach(scaffoldServer => {
-                if (!_lstNodes.Contains(scaffoldServer)) _lstNodes.Add(scaffoldServer);
+                RegisterOne(scaffoldServer);
                 GetFromOne(scaffoldServer);
             });
         }
         private void GetFromOne(Node node)
         {
             Console.WriteLine("\nLooking for nodes from " + node.Address.ToString());
-            if (node.Address.ToString() == BlockchainService.DomainName || node.Address.ToString() == BlockchainService.DomainName + "/")
+            if (node.Address.ToString() == BlockchainService.DomainName
+                || node.Address.ToString() == BlockchainService.DomainName + "/")
             {
                 Console.WriteLine("This is my domain name......... cancelled\n");
                 return;
             }
             try
             {
-                var request = (HttpWebRequest)WebRequest.Create(node.Address + "api/node");
+                var request = (HttpWebRequest)WebRequest.Create(node.NodeRequestAddress);
                 var response = (HttpWebResponse)request.GetResponse();
                 if (response.StatusCode != HttpStatusCode.OK) return;
                 string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
@@ -122,7 +123,7 @@ namespace Services.Nodes
                         RegisterOne(node);
                     });
                 }
-            } catch (Exception e) { Console.WriteLine(node.Address + "api/node: " + e.Message); }
+            } catch (Exception e) { Console.WriteLine(node.NodeRequestAddress + ": " + e.Message); }
         }
         private static bool CheckNew(Node newNode)
         {

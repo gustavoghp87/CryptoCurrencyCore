@@ -25,7 +25,7 @@ WORKDIR /app
 COPY --from=publish /app/out .
 
 #ENV domainName=https://mysterious-thicket-34741.herokuapp.com/
-ENV domainName=https://limitless-sands-00250.herokuapp.com/
-CMD ASPNETCORE_URLS=http://*:$PORT dotnet CryptoCurrency.dll
+#ENV domainName=https://limitless-sands-00250.herokuapp.com/
+#CMD ASPNETCORE_URLS=http://*:$PORT dotnet CryptoCurrency.dll
 
-#CMD ASPNETCORE_URLS=http://*:8080 dotnet CryptoCurrency.dll
+CMD ASPNETCORE_URLS=http://*:8080 dotnet CryptoCurrency.dll

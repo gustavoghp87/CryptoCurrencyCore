@@ -24,50 +24,67 @@ namespace Services.Nodes
             return _largestBlockchain;
         }
 
-        #region private methods region    ///////////////////////////////////////////////////////////////////////
+
+
         private static void GetAllFromNet()
         {
-            if (_lstNodes.Count == 0) Console.WriteLine("There is no node");
-            else
-                foreach (Node node in _lstNodes)
+            if (_lstNodes.Count == 0)
+            {
+                Console.WriteLine("There is no node");
+                return;
+            }
+
+            foreach (Node node in _lstNodes)
+            {
+                if (node.Address.ToString() == BlockchainService.DomainName) continue;
+                try
                 {
-                    if (node.Address.ToString() == BlockchainService.DomainName)
-                    {
-                        Console.WriteLine("EQUALS                                  *************************************** ");
-                        continue;
-                    }
-                    try
-                    {
-                        var url = new Uri(node.Address + "api/blockchain");
-                        Console.WriteLine("Requiring blockchain from " + url.ToString());
-                        var request = (HttpWebRequest)WebRequest.Create(url);
-                        var response = (HttpWebResponse)request.GetResponse();
-                        if (response.StatusCode != HttpStatusCode.OK) continue;
-                        string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
-                        Blockchain blockchain = JsonConvert.DeserializeObject<Blockchain>(json);
+                    var url = node.BlockchainRequestAddress;
+                    Console.WriteLine("Requiring blockchain from " + url.ToString());
+                    var request = (HttpWebRequest)WebRequest.Create(url);
+                    var response = (HttpWebResponse)request.GetResponse();
+                    if (response.StatusCode != HttpStatusCode.OK) continue;
+                    string json = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                    Blockchain blockchain = JsonConvert.DeserializeObject<Blockchain>(json);
+                    if (blockchain != null && BlockchainValidation.IsValid(blockchain))
                         _lstBlockchains.Add(blockchain);
-                    }
-                    catch (Exception e) { Console.WriteLine(node.Address + "api/blockchain: " + e.Message); }
+                    else
+                        Console.WriteLine(); // add to blacklist
                 }
+                catch (Exception e) { Console.WriteLine(node.BlockchainRequestAddress + ": " + e.Message); }
+            }
         }
-        private static void GetLargest()
+        private static void GetLargest()   // or best ?
         {
             foreach (Blockchain blockchain in _lstBlockchains)
             {
                 if (blockchain.Blocks == null || blockchain.Blocks.Count == 0) continue;
-                if (_largestBlockchain != null && _largestBlockchain.Blocks != null)
-                {
-                    if (blockchain.Blocks.Count > _largestBlockchain.Blocks.Count && BlockchainValidation.IsValid(blockchain))
-                        _largestBlockchain = blockchain;
-                    else
-                        Console.WriteLine("Blockchain refused");
-                }
-                else if (BlockchainValidation.IsValid(blockchain))
+                if (_largestBlockchain == null || _largestBlockchain.Blocks == null)
                 {
                     _largestBlockchain = blockchain;
                 }
+
+                if (blockchain.Blocks.Count < _largestBlockchain.Blocks.Count)
+                {
+                    Console.WriteLine("Blockchain refused; shorter");
+                    return;
+                }
+
+                foreach (Block block in blockchain.Blocks)
+                {
+                    foreach (Block blockL in _largestBlockchain.Blocks)
+                    {
+                        if (block.Index != blockL.Index) continue;
+                        if (block.DifficultyScoreNumber < blockL.DifficultyScoreNumber)
+                        {
+                            Console.WriteLine("Blockchain refused");
+                            return;
+                        }
+                    }
+                }
+                _largestBlockchain = blockchain;
             }
+            _lstBlockchains.Clear();
         }
-        #endregion
     }
 }

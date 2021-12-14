@@ -54,7 +54,8 @@ namespace Services.Blockchains
             .GetMined();
 
             if (newBlock == null) return false;
-            newBlock.DifficultyScore = HashScore.Get(newBlock.Hash);
+            newBlock.DifficultyScore = HashScore.GetScoreText(newBlock.Hash);
+            newBlock.DifficultyScoreNumber = HashScore.GetScore(newBlock.Hash);
             if (_blockchain.Blocks == null) return false;
             _blockchain.Blocks.Add(newBlock);
             _blockchain.LastDifficulty = newBlock.DifficultyScore;

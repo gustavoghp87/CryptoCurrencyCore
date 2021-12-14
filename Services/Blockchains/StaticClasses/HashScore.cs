@@ -15,7 +15,7 @@ namespace Services.Blockchains
             "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n",
             "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
         };
-        public static string Get(string hash)
+        public static string GetScoreText(string hash)
         {
             BigInteger score = GetScore(hash);
             int zeros = GetZeros(hash);
@@ -23,9 +23,7 @@ namespace Services.Blockchains
             string text = GetRestInText(zeros, rest);
             return text.ToString();
         }
-
-        // private methods:
-        private static BigInteger GetScore(string hash)
+        public static BigInteger GetScore(string hash)
         {
             if (hash.Length != _hashLength) return 0;
             BigInteger score = 0;
@@ -37,6 +35,10 @@ namespace Services.Blockchains
             }
             return score;
         }
+
+
+
+
         private static int ScoreOneCharacter(string c)
         {
             for (int i = 0; i < _characters.Length; i++)
